@@ -2416,6 +2416,18 @@ html {
     opacity: 0.3;
     transform: translateX(100%); } }
 
+.moveToRight {
+  animation: moveToRight .6s ease both; }
+
+.moveFromRight {
+  animation: moveFromRight .6s ease both; }
+
+.moveToLeft {
+  animation: moveToLeft .6s ease both; }
+
+.moveFromLeft {
+  animation: moveFromLeft .6s ease both; }
+
 .left {
   float: left; }
 
@@ -2435,18 +2447,6 @@ h1, h2, h3, h4, h5 {
   padding: 0px;
   box-sizing: border-box;
   font-weight: normal; }
-
-.moveToRight {
-  animation: moveToRight .6s ease both; }
-
-.moveFromRight {
-  animation: moveFromRight .6s ease both; }
-
-.moveToLeft {
-  animation: moveToLeft .6s ease both; }
-
-.moveFromLeft {
-  animation: moveFromLeft .6s ease both; }
 
 .slides {
   margin: 0px;

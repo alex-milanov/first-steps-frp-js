@@ -1,0 +1,34 @@
+
+
+// anim
++keyframes(moveToLeft)
+  to
+    opacity: 0.3
+    transform: translateX(-100%)
+
++keyframes(moveFromLeft)
+  from
+    opacity: 0.3
+    transform: translateX(-100%)
+
++keyframes(moveToRight)
+  to
+    opacity: 0.3
+    transform: translateX(100%)
+
++keyframes(moveFromRight)
+  from
+    opacity: 0.3
+    transform: translateX(100%)
+
+.moveToRight
+  animation: moveToRight .6s ease both
+
+.moveFromRight
+  animation: moveFromRight .6s ease both
+
+.moveToLeft
+  animation: moveToLeft .6s ease both
+
+.moveFromLeft
+  animation: moveFromLeft .6s ease both

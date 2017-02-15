@@ -13365,19 +13365,22 @@ module.exports = function(sel, data, children, text, elm) {
 
 // initial
 const initial = {
-	number: 0
+	slidesCount: 3,
+	index: 0
 };
 
 // actions
-const set = number => state => Object.assign({}, state, {number});
-const incr = () => state => Object.assign({}, state, {number: state.number + 1});
-const decr = () => state => Object.assign({}, state, {number: state.number - 1});
+const next = () => state => Object.assign({}, state, {
+	index: (state.index < state.slidesCount - 1) ? state.index + 1 : state.index
+});
+const prev = () => state => Object.assign({}, state, {
+	index: (state.index > 0) ? state.index - 1 : state.index
+});
 
 module.exports = {
 	initial,
-	set,
-	incr,
-	decr
+	next,
+	prev
 };
 
 },{}],17:[function(require,module,exports){
@@ -13402,7 +13405,7 @@ let actions$;
 if (module.hot) {
 	// actions
 	actions$ = $.fromEventPattern(
-    h => module.hot.accept("./actions", h)
+		h => module.hot.accept("./actions", h)
 	).flatMap(() => {
 		actions = app.adapt(require('./actions'));
 		return actions.stream.startWith(state => state);
@@ -13423,6 +13426,22 @@ const state$ = actions$
 	.map(state => (console.log(state), state))
 	.share();
 
+document.addEventListener('keyup', e => {
+	console.log(e.key);
+	if (e.target.contentEditable === 'true') {
+		if (e.key === 'Escape') {
+			e.target.blur();
+			window
+				.getSelection()
+				.removeAllRanges();
+			document.querySelector('.slides').focus();
+		}
+		return;
+	}
+	if (e.key === 'ArrowRight') actions.next();
+	if (e.key === 'ArrowLeft') actions.prev();
+});
+
 // state -> ui
 const ui$ = state$.map(state => ui({state, actions}));
 vdom.patchStream(ui$, '#ui');
@@ -13437,11 +13456,11 @@ const {section, button, span, h1, h2, pre, code} = require('iblokz/adapters/vdom
 
 module.exports = ({state, actions}) => section('#ui', [
 	section('.slides[tabindex="0"]', [
-		section([span([
+		section({class: {active: state.index === 0}}, [span([
 			h2('First Steps in'),
 			h1('Functional Reactive JavaScript')
 		])]),
-		section('.active', [span([
+		section({class: {active: state.index === 1}}, [span([
 			h1('creating a Hash'),
 			h2('Converting a collection to a key/value hash:'),
 			pre([code('[type="js"][contenteditable="true"]', `
@@ -13454,7 +13473,7 @@ module.exports = ({state, actions}) => section('#ui', [
 	);
 			`)])
 		])]),
-		section([span([
+		section({class: {active: state.index === 2}}, [span([
 			h1('Slide 3'),
 			h2('Some desc here')
 		])])

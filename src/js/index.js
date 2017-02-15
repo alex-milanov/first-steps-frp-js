@@ -19,7 +19,7 @@ let actions$;
 if (module.hot) {
 	// actions
 	actions$ = $.fromEventPattern(
-    h => module.hot.accept("./actions", h)
+		h => module.hot.accept("./actions", h)
 	).flatMap(() => {
 		actions = app.adapt(require('./actions'));
 		return actions.stream.startWith(state => state);
@@ -39,6 +39,22 @@ const state$ = actions$
 	.scan((state, change) => change(state), {})
 	.map(state => (console.log(state), state))
 	.share();
+
+document.addEventListener('keyup', e => {
+	console.log(e.key);
+	if (e.target.contentEditable === 'true') {
+		if (e.key === 'Escape') {
+			e.target.blur();
+			window
+				.getSelection()
+				.removeAllRanges();
+			document.querySelector('.slides').focus();
+		}
+		return;
+	}
+	if (e.key === 'ArrowRight') actions.next();
+	if (e.key === 'ArrowLeft') actions.prev();
+});
 
 // state -> ui
 const ui$ = state$.map(state => ui({state, actions}));
