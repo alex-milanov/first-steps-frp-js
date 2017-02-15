@@ -1,5 +1,6 @@
 @charset "UTF-8";
 @import url(//fonts.googleapis.com/css?family=Open+Sans);
+@import url("https://fonts.googleapis.com/css?family=Jura");
 /*!
  *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
@@ -2335,38 +2336,161 @@ html {
 *, *::after, *::before {
   box-sizing: inherit; }
 
-body {
-  font-family: "Open Sans"; }
+@-webkit-keyframes moveToLeft {
+  to {
+    opacity: 0.3;
+    transform: translateX(-100%); } }
 
-.counter {
-  height: 32px;
-  line-height: 32px; }
-  .counter > * {
-    float: left; }
-  .counter > span {
-    height: 32px;
-    line-height: 32px;
-    display: inline-block;
-    font-size: 14px;
-    padding: 0px 10px; }
-  .counter button {
-    display: inline-block;
-    box-sizing: border-box;
-    height: 32px;
-    line-height: 12px;
-    padding: 10px;
-    cursor: pointer;
-    font-size: 14px;
-    background: #fafafa;
-    color: #333;
-    border: 0px;
-    transition: box-shadow 0.3s, background 0.3s;
-    box-shadow: 1px 1px 2px #ccc;
-    outline: none; }
-    .counter button:active {
-      padding: 11px 10px 9px 10px; }
-    .counter button:active {
-      outline: none; }
-    .counter button:hover {
-      box-shadow: 1px 1px 5px #aaa;
-      color: #000; }
+@-moz-keyframes moveToLeft {
+  to {
+    opacity: 0.3;
+    transform: translateX(-100%); } }
+
+@-ms-keyframes moveToLeft {
+  to {
+    opacity: 0.3;
+    transform: translateX(-100%); } }
+
+@keyframes moveToLeft {
+  to {
+    opacity: 0.3;
+    transform: translateX(-100%); } }
+
+@-webkit-keyframes moveFromLeft {
+  from {
+    opacity: 0.3;
+    transform: translateX(-100%); } }
+
+@-moz-keyframes moveFromLeft {
+  from {
+    opacity: 0.3;
+    transform: translateX(-100%); } }
+
+@-ms-keyframes moveFromLeft {
+  from {
+    opacity: 0.3;
+    transform: translateX(-100%); } }
+
+@keyframes moveFromLeft {
+  from {
+    opacity: 0.3;
+    transform: translateX(-100%); } }
+
+@-webkit-keyframes moveToRight {
+  to {
+    opacity: 0.3;
+    transform: translateX(100%); } }
+
+@-moz-keyframes moveToRight {
+  to {
+    opacity: 0.3;
+    transform: translateX(100%); } }
+
+@-ms-keyframes moveToRight {
+  to {
+    opacity: 0.3;
+    transform: translateX(100%); } }
+
+@keyframes moveToRight {
+  to {
+    opacity: 0.3;
+    transform: translateX(100%); } }
+
+@-webkit-keyframes moveFromRight {
+  from {
+    opacity: 0.3;
+    transform: translateX(100%); } }
+
+@-moz-keyframes moveFromRight {
+  from {
+    opacity: 0.3;
+    transform: translateX(100%); } }
+
+@-ms-keyframes moveFromRight {
+  from {
+    opacity: 0.3;
+    transform: translateX(100%); } }
+
+@keyframes moveFromRight {
+  from {
+    opacity: 0.3;
+    transform: translateX(100%); } }
+
+.left {
+  float: left; }
+
+.right {
+  float: right; }
+
+.onTop {
+  z-index: 999 !important; }
+
+body {
+  font-family: Jura;
+  margin: 0px;
+  padding: 0px; }
+
+h1, h2, h3, h4, h5 {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  font-weight: normal; }
+
+.moveToRight {
+  animation: moveToRight .6s ease both; }
+
+.moveFromRight {
+  animation: moveFromRight .6s ease both; }
+
+.moveToLeft {
+  animation: moveToLeft .6s ease both; }
+
+.moveFromLeft {
+  animation: moveFromLeft .6s ease both; }
+
+.slides {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  overflow: hidden;
+  background: #596a72;
+  perspective: 1200px;
+  transform-style: preserve-3d; }
+  .slides section {
+    position: absolute;
+    visibility: hidden;
+    overflow: hidden;
+    backface-visibility: hidden;
+    transform: translate3d(0, 0, 0);
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, #cedce7 0%, #596a72 100%);
+    z-index: 0; }
+    .slides section.active {
+      visibility: visible; }
+    .slides section > span {
+      margin: 0px;
+      padding: 0px;
+      box-sizing: border-box;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%); }
+      .slides section > span h1, .slides section > span h2 {
+        text-align: center; }
+      .slides section > span h1 {
+        font-size: 3em; }
+      .slides section > span h2 {
+        font-size: 1.7em; }
+      .slides section > span pre {
+        border: 1px solid #333; }
+        .slides section > span pre code {
+          display: block;
+          padding: 5px; }

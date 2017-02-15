@@ -1,44 +1,128 @@
 @import url(//fonts.googleapis.com/css?family=Open+Sans)
+@import url('https://fonts.googleapis.com/css?family=Jura')
 
 @import 'font-awesome'
 @import 'bourbon'
 @import 'neat'
 
+=reset
+  margin: 0px
+  padding: 0px
+  box-sizing: border-box
+
+=header-height($s)
+  +reset
+  display: inline-block
+  height: $s
+  line-height: $s
+
+=pos($top: 0px, $right: 0px, $bottom: 0px, $left: 0px)
+  +reset
+  position: absolute
+  top: $top
+  right: $right
+  bottom: $bottom
+  left: $left
+
+=centerer
+  +reset
+  position: absolute
+  top: 50%
+  left: 50%
+  transform: translate(-50%, -50%)
+
+=activatable($displayType: block)
+  display: none
+  &.active
+    display: $displayType
+
+=keyframes($name)
+  @-webkit-keyframes #{$name}
+    @content
+  @-moz-keyframes #{$name}
+    @content
+  @-ms-keyframes #{$name}
+    @content
+  @keyframes #{$name}
+    @content
+
+// anim
++keyframes(moveToLeft)
+  to
+    opacity: 0.3
+    transform: translateX(-100%)
++keyframes(moveFromLeft)
+  from
+    opacity: 0.3
+    transform: translateX(-100%)
++keyframes(moveToRight)
+  to
+    opacity: 0.3
+    transform: translateX(100%)
++keyframes(moveFromRight)
+  from
+    opacity: 0.3
+    transform: translateX(100%)
+
+
+
+.left
+  float: left
+.right
+  float: right
+.onTop
+  z-index: 999!important
+
 body
-	font-family: "Open Sans"
+  font-family: Jura
+  margin: 0px
+  padding: 0px
 
-@mixin ui-button($h: 32px, $p: 10px)
-	display: inline-block
-	box-sizing: border-box
-	height: $h
-	line-height: $h - 2*$p
-	padding: $p
-	cursor: pointer
-	font-size: $h / 2 - 2px
-	&:active
-		padding: ($p + 1) $p ($p - 1) $p
+h1, h2, h3, h4, h5
+  +reset
+  font-weight: normal
 
-.counter
-	height: 32px
-	line-height: 32px
-	> *
-		float: left
-	> span
-		height: 32px
-		line-height: 32px
-		display: inline-block
-		font-size: 14px
-		padding: 0px 10px
-	button
-		+ui-button()
-		background: #fafafa
-		color: #333
-		border: 0px
-		transition: box-shadow 0.3s, background 0.3s
-		box-shadow: 1px 1px 2px #ccc
-		outline: none
-		&:active
-			outline: none
-		&:hover
-			box-shadow: 1px 1px 5px #aaa
-			color: #000
+.moveToRight
+  animation: moveToRight .6s ease both
+.moveFromRight
+  animation: moveFromRight .6s ease both
+.moveToLeft
+  animation: moveToLeft .6s ease both
+.moveFromLeft
+  animation: moveFromLeft .6s ease both
+
+
+
+.slides
+  +pos
+  overflow: hidden
+  background: #596a72
+  perspective: 1200px
+  transform-style: preserve-3d
+  section
+    position: absolute
+    visibility: hidden
+    overflow: hidden
+    backface-visibility: hidden
+    transform: translate3d(0, 0, 0)
+    &.active
+      visibility: visible
+    top: 0px
+    left: 0px
+    width: 100%
+    height: 100%
+    background: radial-gradient(ellipse at center, #cedce7 0%, #596a72 100%)
+    z-index: 0
+    > span
+      +centerer
+      h1, h2
+        text-align: center
+      h1
+        font-size: 3em
+      h2
+        font-size: 1.7em
+      pre
+        border: 1px solid #333
+        code
+          display: block
+          padding: 5px
