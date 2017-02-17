@@ -13434,15 +13434,23 @@ const state$ = actions$
 	.map(state => (console.log(state), state))
 	.share();
 
-document.addEventListener('keyup', e => {
-	console.log(e.key);
+document.addEventListener('keydown', e => {
+	console.log(e.key, e.target);
 	if (e.target.contentEditable === 'true') {
-		if (e.key === 'Escape') {
-			e.target.blur();
-			window
-				.getSelection()
-				.removeAllRanges();
-			document.querySelector('.slides').focus();
+		switch (e.key) {
+			case 'Escape':
+				e.target.blur();
+				window
+					.getSelection()
+					.removeAllRanges();
+				document.querySelector('.slides').focus();
+				break;
+			case 'Tab':
+				e.preventDefault();
+				document.execCommand('insertHTML', false, '&#009');
+				break;
+			default:
+				break;
 		}
 		return;
 	}
@@ -13459,6 +13467,15 @@ vdom.patchStream(ui$, '#ui');
 
 // dom
 const {section, button, span, h1, h2, pre, code} = require('iblokz/adapters/vdom');
+
+const prepAnim = (i, {index, old, transitioning}) => ({
+	active: index === i || (old === i && transitioning === true),
+	onTop: transitioning === true && index === i,
+	moveFromRight: transitioning === true && index === i && (index - old) === 1,
+	moveToLeft: transitioning === true && old === i && (index - old) === 1,
+	moveFromLeft: transitioning === true && index === i && (index - old) === -1,
+	moveToRight: transitioning === true && old === i && (index - old) === -1
+});
 
 const slides = [
 	// slide 1
@@ -13490,14 +13507,7 @@ const hash = users.reduce(
 module.exports = ({state, actions}) => section('#ui', [
 	section('.slides[tabindex="0"]', slides.map((slide, i) =>
 		section({
-			class: {
-				active: state.index === i || (state.old === i && state.transitioning === true),
-				onTop: state.transitioning === true && state.index === i,
-				moveFromRight: state.transitioning === true && state.index === i && (state.index - state.old) === 1,
-				moveToLeft: state.transitioning === true && state.old === i && (state.index - state.old) === 1,
-				moveFromLeft: state.transitioning === true && state.index === i && (state.index - state.old) === -1,
-				moveToRight: state.transitioning === true && state.old === i && (state.index - state.old) === -1
-			},
+			class: prepAnim(i, state),
 			on: (state.index === i && state.transitioning) ? {animationend: () => actions.transitionend()} : {}
 		}, [slide])
 	))

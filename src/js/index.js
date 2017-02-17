@@ -40,15 +40,23 @@ const state$ = actions$
 	.map(state => (console.log(state), state))
 	.share();
 
-document.addEventListener('keyup', e => {
-	console.log(e.key);
+document.addEventListener('keydown', e => {
+	console.log(e.key, e.target);
 	if (e.target.contentEditable === 'true') {
-		if (e.key === 'Escape') {
-			e.target.blur();
-			window
-				.getSelection()
-				.removeAllRanges();
-			document.querySelector('.slides').focus();
+		switch (e.key) {
+			case 'Escape':
+				e.target.blur();
+				window
+					.getSelection()
+					.removeAllRanges();
+				document.querySelector('.slides').focus();
+				break;
+			case 'Tab':
+				e.preventDefault();
+				document.execCommand('insertHTML', false, '&#009');
+				break;
+			default:
+				break;
 		}
 		return;
 	}

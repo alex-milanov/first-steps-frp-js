@@ -2490,7 +2490,14 @@ h1, h2, h3, h4, h5 {
       .slides section > span h2 {
         font-size: 1.7em; }
       .slides section > span pre {
-        border: 1px solid #333; }
+        border: 1px solid #969dab; }
         .slides section > span pre code {
           display: block;
-          padding: 5px; }
+          padding: 5px;
+          color: #3e434c;
+          transition: box-shadow .3s;
+          tab-size: 2; }
+          .slides section > span pre code:focus {
+            outline: none;
+            box-shadow: inset 0px 0px 55px #949fa9, 2px 2px 3px #8a8f96;
+            color: #333; }
