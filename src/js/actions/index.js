@@ -1,11 +1,23 @@
 'use strict';
 
+const obj = require('iblokz/common/obj');
+
 // initial
 const initial = {
 	slidesCount: 3,
 	index: 0,
 	old: 0,
-	transitioning: false
+	transitioning: false,
+	anim: {
+		left: {
+			in: 'moveFromLeft',
+			out: 'moveToRight'
+		},
+		right: {
+			in: 'moveFromRight',
+			out: 'moveToLeft'
+		}
+	}
 };
 
 // actions
@@ -20,10 +32,12 @@ const prev = () => state => Object.assign({}, state, {
 	transitioning: true
 });
 const transitionend = () => state => Object.assign({}, state, {transitioning: false});
+const changeAnim = (direction, inOut, animClass) => state => obj.patch(state, ['anim', direction, inOut], animClass);
 
 module.exports = {
 	initial,
 	next,
 	prev,
-	transitionend
+	transitionend,
+	changeAnim
 };

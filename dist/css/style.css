@@ -2500,4 +2500,27 @@ h1, h2, h3, h4, h5 {
           .slides section > span pre code:focus {
             outline: none;
             box-shadow: inset 0px 0px 55px #949fa9, 2px 2px 3px #8a8f96;
-            color: #333; }
+            color: #000; }
+
+.controls {
+  display: block;
+  z-index: 1000;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 360px;
+  height: 74px;
+  border: 1px solid #969dab;
+  box-shadow: inset 0px 0px 55px #949fa9, 2px 2px 3px #8a8f96;
+  opacity: 0.7; }
+  .controls:hover {
+    opacity: 1; }
+  .controls label, .controls section, .controls input {
+    display: inline-block;
+    box-sizing: border-box;
+    line-height: 32px; }
+  .controls label {
+    width: 30%;
+    padding: 0px 10px; }
+  .controls section, .controls input {
+    width: 30%; }

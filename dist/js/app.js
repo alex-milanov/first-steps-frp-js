@@ -13363,12 +13363,24 @@ module.exports = function(sel, data, children, text, elm) {
 },{}],16:[function(require,module,exports){
 'use strict';
 
+const obj = require('iblokz/common/obj');
+
 // initial
 const initial = {
 	slidesCount: 3,
 	index: 0,
 	old: 0,
-	transitioning: false
+	transitioning: false,
+	anim: {
+		left: {
+			in: 'moveFromLeft',
+			out: 'moveToRight'
+		},
+		right: {
+			in: 'moveFromRight',
+			out: 'moveToLeft'
+		}
+	}
 };
 
 // actions
@@ -13383,15 +13395,17 @@ const prev = () => state => Object.assign({}, state, {
 	transitioning: true
 });
 const transitionend = () => state => Object.assign({}, state, {transitioning: false});
+const changeAnim = (direction, inOut, animClass) => state => obj.patch(state, ['anim', direction, inOut], animClass);
 
 module.exports = {
 	initial,
 	next,
 	prev,
-	transitionend
+	transitionend,
+	changeAnim
 };
 
-},{}],17:[function(require,module,exports){
+},{"iblokz/common/obj":3}],17:[function(require,module,exports){
 'use strict';
 
 // lib
@@ -13462,20 +13476,84 @@ document.addEventListener('keydown', e => {
 const ui$ = state$.map(state => ui({state, actions}));
 vdom.patchStream(ui$, '#ui');
 
-},{"./actions":16,"./ui":18,"./util/app":19,"iblokz/adapters/vdom":1,"iblokz/common/arr":2,"iblokz/common/obj":3,"rx":5}],18:[function(require,module,exports){
+},{"./actions":16,"./ui":19,"./util/app":21,"iblokz/adapters/vdom":1,"iblokz/common/arr":2,"iblokz/common/obj":3,"rx":5}],18:[function(require,module,exports){
 'use strict';
 
 // dom
-const {section, button, span, h1, h2, pre, code} = require('iblokz/adapters/vdom');
+const {
+	section, button, span, h1, h2, pre, code,
+	form, fieldset, label, legend, input, select, option
+} = require('iblokz/adapters/vdom');
 
-const prepAnim = (i, {index, old, transitioning}) => ({
+const animList = [
+	'moveToLeft',
+	'moveFromLeft',
+	'moveToRight',
+	'moveFromRight'
+];
+
+module.exports = ({state, actions}) => section('.controls', [
+	label('left in/out'),
+	select({on: {change: ev => actions.changeAnim('left', 'in', ev.target.value)}}, animList.map(
+		anim => option({attrs: {selected: anim === state.anim.left.in}, prop: {value: anim}}, anim))
+	),
+	select({on: {change: ev => actions.changeAnim('left', 'out', ev.target.value)}}, animList.map(
+		anim => option({attrs: {selected: anim === state.anim.left.out}, prop: {value: anim}}, anim))
+	),
+	label('right in/out'),
+	select({on: {change: ev => actions.changeAnim('right', 'in', ev.target.value)}}, animList.map(
+		anim => option({attrs: {selected: anim === state.anim.right.in}, prop: {value: anim}}, anim))
+	),
+	select({on: {change: ev => actions.changeAnim('right', 'out', ev.target.value)}}, animList.map(
+		anim => option({attrs: {selected: anim === state.anim.right.out}, prop: {value: anim}}, anim))
+	)
+]);
+
+},{"iblokz/adapters/vdom":1}],19:[function(require,module,exports){
+'use strict';
+
+// dom
+const {
+	section, button, span, h1, h2, pre, code,
+	form, fieldset, label, legend, input, select, option
+} = require('iblokz/adapters/vdom');
+
+const slides = require('./slides');
+const controls = require('./controls');
+
+module.exports = ({state, actions}) => section('#ui', [
+	slides({state, actions}),
+	controls({state, actions})
+]);
+
+},{"./controls":18,"./slides":20,"iblokz/adapters/vdom":1}],20:[function(require,module,exports){
+'use strict';
+
+// dom
+const {
+	section, button, span, h1, h2, pre, code,
+	form, fieldset, label, legend, input, select, option
+} = require('iblokz/adapters/vdom');
+
+const obj = require('iblokz/common/obj');
+
+const getDirection = (index, old) => (index > old) ? 'right' : 'left';
+const getInOut = (index, old, i) => (index === i) ? 'in' : 'out';
+
+const prepAnim = (i, {index, old, transitioning, anim}) => Object.assign({
 	active: index === i || (old === i && transitioning === true),
-	onTop: transitioning === true && index === i,
-	moveFromRight: transitioning === true && index === i && (index - old) === 1,
-	moveToLeft: transitioning === true && old === i && (index - old) === 1,
-	moveFromLeft: transitioning === true && index === i && (index - old) === -1,
-	moveToRight: transitioning === true && old === i && (index - old) === -1
-});
+	onTop: transitioning === true && index === i
+},
+(transitioning === true && index !== old && (index === i || old === i))
+	? obj.keyValue(anim[getDirection(index, old)][getInOut(index, old, i)], true)
+	: {}
+);
+
+// 	moveFromRight: transitioning === true && index === i && (index - old) === 1,
+// 	moveToLeft: transitioning === true && old === i && (index - old) === 1,
+// 	moveFromLeft: transitioning === true && index === i && (index - old) === -1,
+// 	moveToRight: transitioning === true && old === i && (index - old) === -1
+// });
 
 const slides = [
 	// slide 1
@@ -13491,7 +13569,8 @@ const slides = [
 const users = [
 	{id: 1, name: 'Bob'},
 	{id: 1, name: 'John'},
-]
+];
+
 const hash = users.reduce(
 	(h, u) => ((h[u.id] = u.name), h), {}
 );
@@ -13504,16 +13583,14 @@ const hash = users.reduce(
 	])
 ];
 
-module.exports = ({state, actions}) => section('#ui', [
-	section('.slides[tabindex="0"]', slides.map((slide, i) =>
-		section({
-			class: prepAnim(i, state),
-			on: (state.index === i && state.transitioning) ? {animationend: () => actions.transitionend()} : {}
-		}, [slide])
-	))
-]);
+module.exports = ({state, actions}) => section('.slides[tabindex="0"]', slides.map((slide, i) =>
+	section({
+		class: prepAnim(i, state),
+		on: (state.index === i && state.transitioning) ? {animationend: () => actions.transitionend()} : {}
+	}, [slide])
+));
 
-},{"iblokz/adapters/vdom":1}],19:[function(require,module,exports){
+},{"iblokz/adapters/vdom":1,"iblokz/common/obj":3}],21:[function(require,module,exports){
 'use strict';
 
 // lib
