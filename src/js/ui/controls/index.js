@@ -17,7 +17,9 @@ const animList = [
 	'moveFromRight'
 ];
 
-module.exports = ({state, actions}) => section('.controls', [
+module.exports = ({state, actions}) => section('.controls', {
+	class: {on: state.controls}
+}, [
 	label('top in/out'),
 	select({on: {change: ev => actions.changeAnim('top', 'in', ev.target.value)}}, animList.map(
 		anim => option({attrs: {selected: anim === state.anim.top.in}, prop: {value: anim}}, anim))

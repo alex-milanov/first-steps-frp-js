@@ -41,7 +41,7 @@ const state$ = actions$
 	.share();
 
 document.addEventListener('keydown', e => {
-	console.log(e.key, e.target);
+	console.log(e.key, e.target, e);
 	if (e.target.contentEditable === 'true') {
 		switch (e.key) {
 			case 'Escape':
@@ -60,6 +60,9 @@ document.addEventListener('keydown', e => {
 		}
 		return;
 	}
+	if (e.key === 'E' && e.shiftKey === true && e.ctrlKey === true)
+		actions.toggleControls();
+
 	if (e.key === 'ArrowUp') actions.move('top');
 	if (e.key === 'ArrowRight') actions.move('right');
 	if (e.key === 'ArrowDown') actions.move('bottom');
