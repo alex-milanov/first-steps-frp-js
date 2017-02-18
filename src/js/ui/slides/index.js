@@ -7,6 +7,14 @@ const {
 } = require('iblokz/adapters/vdom');
 
 const obj = require('iblokz/common/obj');
+const prettify = require('code-prettify');
+
+const unprettify = html => {
+	const tDiv = document.createElement('div');
+	tDiv.innerHTML = html.replace(/<br>/g, '^^nl^^');
+	const text = tDiv.textContent.replace(/\^\^nl\^\^/g, '\n');
+	return text;
+};
 
 const getDirection = (index, old) => (index > old) ? 'right' : 'left';
 const getInOut = (index, old, i) => (index === i) ? 'in' : 'out';
@@ -36,16 +44,23 @@ const slides = [
 	span([
 		h1('creating a Hash'),
 		h2('Converting a collection to a key/value hash:'),
-		pre([code('[type="js"][contenteditable="true"]', `
-const users = [
-	{id: 1, name: 'Bob'},
-	{id: 1, name: 'John'},
-];
+		pre([code('[type="js"][contenteditable="true"]', {
+			props: {
+				innerHTML: prettify.prettyPrintOne(`
+	const users = [
+		{id: 1, name: 'Bob'},
+		{id: 1, name: 'John'},
+	];
 
-const hash = users.reduce(
-	(h, u) => ((h[u.id] = u.name), h), {}
-);
-		`)])
+	const hash = users.reduce(
+		(h, u) => ((h[u.id] = u.name), h), {}
+	);
+			`)
+			},
+			on: {
+				input: ({target}) => (target.innerHTML = prettify.prettyPrintOne(unprettify(target.innerHTML)))
+			}
+		})])
 	]),
 	// slide 3
 	span([

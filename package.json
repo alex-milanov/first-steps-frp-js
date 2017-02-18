@@ -1,5 +1,5 @@
 {
-  "name": "ui-boilerplate",
+  "name": "fisrt-steps-frp-js",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -19,6 +19,7 @@
   "dependencies": {
     "bourbon": "^4.2.7",
     "bourbon-neat": "^1.8.0",
+    "code-prettify": "github:alex-milanov/code-prettify",
     "font-awesome": "^4.7.0",
     "iblokz": "github:iblokz/iblokz",
     "rx": "^4.1.0",

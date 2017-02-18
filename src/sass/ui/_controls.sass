@@ -7,16 +7,20 @@
 	width: 360px
 	height: 74px
 	border: 1px solid #969dab
-	box-shadow: inset 0px 0px 55px #949fa9, 2px 2px 3px #8a8f96
+	box-shadow: inset 0px 0px 55px #949fa9
 	opacity: 0.7
+	cursor: pointer
+	transition: opacity .2s
 	&:hover
 		opacity: 1
-	label, section, input
+	label, select, input
 		display: inline-block
 		box-sizing: border-box
 		line-height: 32px
+		cursor: pointer
 	label
 		width: 30%
 		padding: 0px 10px
-	section, input
-		width: 30%
+	select, input
+		width: 33%
+		margin: 0.5%
