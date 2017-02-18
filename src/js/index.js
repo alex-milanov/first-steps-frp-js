@@ -60,8 +60,10 @@ document.addEventListener('keydown', e => {
 		}
 		return;
 	}
-	if (e.key === 'ArrowRight') actions.next();
-	if (e.key === 'ArrowLeft') actions.prev();
+	if (e.key === 'ArrowUp') actions.move('top');
+	if (e.key === 'ArrowRight') actions.move('right');
+	if (e.key === 'ArrowDown') actions.move('bottom');
+	if (e.key === 'ArrowLeft') actions.move('left');
 });
 
 // state -> ui

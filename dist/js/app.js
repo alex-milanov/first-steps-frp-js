@@ -15353,14 +15353,23 @@ const obj = require('iblokz/common/obj');
 
 // initial
 const initial = {
-	slidesCount: 3,
-	index: 0,
-	old: 0,
+	slidesMap: ['', ['', ''], ''],
+	index: [0, 0],
+	old: [0, 0],
 	transitioning: false,
+	direction: false,
 	anim: {
+		top: {
+			in: 'moveFromTop',
+			out: 'moveToBottom'
+		},
 		left: {
 			in: 'moveFromLeft',
 			out: 'moveToRight'
+		},
+		bottom: {
+			in: 'moveFromBottom',
+			out: 'moveToTop'
 		},
 		right: {
 			in: 'moveFromRight',
@@ -15369,7 +15378,25 @@ const initial = {
 	}
 };
 
+const directionMap = {
+	top: ({index, slidesMap}) => (slidesMap[index[0]] instanceof Array && index[1] > 0)
+		? [index[0], index[1] - 1] : index,
+	left: ({index, slidesMap}) => (index[0] > 0)
+		? [index[0] - 1, 0] : index,
+	bottom: ({index, slidesMap}) => (slidesMap[index[0]] instanceof Array && (index[1] < slidesMap[index[0]].length - 1))
+		? [index[0], index[1] + 1] : index,
+	right: ({index, slidesMap}) => (index[0] < slidesMap.length - 1)
+		? [index[0] + 1, 0] : index
+};
+
 // actions
+const move = direction => state => Object.assign({}, state, {
+	index: directionMap[direction](state),
+	old: state.index,
+	transitioning: true,
+	direction
+});
+/*
 const next = () => state => Object.assign({}, state, {
 	index: (state.index < state.slidesCount - 1) ? state.index + 1 : state.index,
 	old: state.index,
@@ -15380,13 +15407,13 @@ const prev = () => state => Object.assign({}, state, {
 	old: state.index,
 	transitioning: true
 });
-const transitionend = () => state => Object.assign({}, state, {transitioning: false});
+*/
+const transitionend = () => state => Object.assign({}, state, {transitioning: false, directon: false});
 const changeAnim = (direction, inOut, animClass) => state => obj.patch(state, ['anim', direction, inOut], animClass);
 
 module.exports = {
 	initial,
-	next,
-	prev,
+	move,
 	transitionend,
 	changeAnim
 };
@@ -15454,8 +15481,10 @@ document.addEventListener('keydown', e => {
 		}
 		return;
 	}
-	if (e.key === 'ArrowRight') actions.next();
-	if (e.key === 'ArrowLeft') actions.prev();
+	if (e.key === 'ArrowUp') actions.move('top');
+	if (e.key === 'ArrowRight') actions.move('right');
+	if (e.key === 'ArrowDown') actions.move('bottom');
+	if (e.key === 'ArrowLeft') actions.move('left');
 });
 
 // state -> ui
@@ -15472,19 +15501,37 @@ const {
 } = require('iblokz/adapters/vdom');
 
 const animList = [
+	'moveToTop',
+	'moveFromTop',
 	'moveToLeft',
 	'moveFromLeft',
+	'moveToBottom',
+	'moveFromBottom',
 	'moveToRight',
 	'moveFromRight'
 ];
 
 module.exports = ({state, actions}) => section('.controls', [
+	label('top in/out'),
+	select({on: {change: ev => actions.changeAnim('top', 'in', ev.target.value)}}, animList.map(
+		anim => option({attrs: {selected: anim === state.anim.top.in}, prop: {value: anim}}, anim))
+	),
+	select({on: {change: ev => actions.changeAnim('top', 'out', ev.target.value)}}, animList.map(
+		anim => option({attrs: {selected: anim === state.anim.top.out}, prop: {value: anim}}, anim))
+	),
 	label('left in/out'),
 	select({on: {change: ev => actions.changeAnim('left', 'in', ev.target.value)}}, animList.map(
 		anim => option({attrs: {selected: anim === state.anim.left.in}, prop: {value: anim}}, anim))
 	),
 	select({on: {change: ev => actions.changeAnim('left', 'out', ev.target.value)}}, animList.map(
 		anim => option({attrs: {selected: anim === state.anim.left.out}, prop: {value: anim}}, anim))
+	),
+	label('bottom in/out'),
+	select({on: {change: ev => actions.changeAnim('bottom', 'in', ev.target.value)}}, animList.map(
+		anim => option({attrs: {selected: anim === state.anim.bottom.in}, prop: {value: anim}}, anim))
+	),
+	select({on: {change: ev => actions.changeAnim('bottom', 'out', ev.target.value)}}, animList.map(
+		anim => option({attrs: {selected: anim === state.anim.bottom.out}, prop: {value: anim}}, anim))
 	),
 	label('right in/out'),
 	select({on: {change: ev => actions.changeAnim('right', 'in', ev.target.value)}}, animList.map(
@@ -15531,15 +15578,17 @@ const unprettify = html => {
 	return text;
 };
 
-const getDirection = (index, old) => (index > old) ? 'right' : 'left';
 const getInOut = (index, old, i) => (index === i) ? 'in' : 'out';
 
-const prepAnim = (i, {index, old, transitioning, anim}) => Object.assign({
-	active: index === i || (old === i && transitioning === true),
-	onTop: transitioning === true && index === i
+const arrEq = (arr1, arr2) => JSON.stringify(arr1) === JSON.stringify(arr2);
+const arrFlatten = arr => arr.reduce((af, ai) => [].concat(af, ai), []);
+
+const prepAnim = (pos, {index, old, direction, transitioning, anim}) => Object.assign({
+	active: (arrEq(index, pos) || (arrEq(old, pos)) && transitioning === true),
+	onTop: transitioning === true && arrEq(index, pos)
 },
-(transitioning === true && index !== old && (index === i || old === i))
-	? obj.keyValue(anim[getDirection(index, old)][getInOut(index, old, i)], true)
+(transitioning === true && !arrEq(index, old) && (arrEq(index, pos) || arrEq(old, pos)))
+	? obj.keyValue(anim[direction][arrEq(index, pos) ? 'in' : 'out'], true)
 	: {}
 );
 
@@ -15551,44 +15600,53 @@ const prepAnim = (i, {index, old, transitioning, anim}) => Object.assign({
 
 const slides = [
 	// slide 1
-	span([
+	[span([
 		h2('First Steps in'),
 		h1('Functional Reactive JavaScript')
-	]),
+	])],
 	// slide 2
-	span([
-		h1('creating a Hash'),
-		h2('Converting a collection to a key/value hash:'),
-		pre([code('[type="js"][contenteditable="true"]', {
-			props: {
-				innerHTML: prettify.prettyPrintOne(`
-	const users = [
-		{id: 1, name: 'Bob'},
-		{id: 1, name: 'John'},
-	];
+	[
+		span([
+			h1('creating a Hash'),
+			h2('Converting a collection to a key/value hash:'),
+			pre([code('[type="js"][contenteditable="true"]', {
+				props: {
+					innerHTML: prettify.prettyPrintOne(`
+		const users = [
+			{id: 1, name: 'Bob'},
+			{id: 1, name: 'John'},
+		];
 
-	const hash = users.reduce(
-		(h, u) => ((h[u.id] = u.name), h), {}
-	);
-			`)
-			},
-			on: {
-				input: ({target}) => (target.innerHTML = prettify.prettyPrintOne(unprettify(target.innerHTML)))
-			}
-		})])
-	]),
+		const hash = users.reduce(
+			(h, u) => ((h[u.id] = u.name), h), {}
+		);
+				`)
+				},
+				on: {
+					input: ({target}) => (target.innerHTML = prettify.prettyPrintOne(unprettify(target.innerHTML)))
+				}
+			})])
+		]),
+		span([
+			h1('Slide 2.1'),
+			h2('Some desc here')
+		])
+	],
 	// slide 3
-	span([
+	[span([
 		h1('Slide 3'),
 		h2('Some desc here')
-	])
+	])]
 ];
 
-module.exports = ({state, actions}) => section('.slides[tabindex="0"]', slides.map((slide, i) =>
-	section({
-		class: prepAnim(i, state),
-		on: (state.index === i && state.transitioning) ? {animationend: () => actions.transitionend()} : {}
-	}, [slide])
+module.exports = ({state, actions}) => section('.slides[tabindex="0"]', arrFlatten(slides.map((col, i) =>
+	col.map((slide, k) =>
+		section({
+			class: prepAnim([i, k], state),
+			on: (arrEq(state.index, [i, k]) && state.transitioning)
+				? {animationend: () => actions.transitionend()} : {}
+		}, [slide])
+	))
 ));
 
 },{"code-prettify":1,"iblokz/adapters/vdom":2,"iblokz/common/obj":4}],23:[function(require,module,exports){

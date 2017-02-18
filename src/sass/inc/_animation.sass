@@ -1,6 +1,16 @@
 
 
 // anim
++keyframes(moveToTop)
+  to
+    opacity: 0.3
+    transform: translateY(-100%)
+
++keyframes(moveFromTop)
+  from
+    opacity: 0.3
+    transform: translateY(-100%)
+
 +keyframes(moveToLeft)
   to
     opacity: 0.3
@@ -10,6 +20,16 @@
   from
     opacity: 0.3
     transform: translateX(-100%)
+
++keyframes(moveToBottom)
+  to
+    opacity: 0.3
+    transform: translateY(100%)
+
++keyframes(moveFromBottom)
+  from
+    opacity: 0.3
+    transform: translateY(100%)
 
 +keyframes(moveToRight)
   to
@@ -21,11 +41,23 @@
     opacity: 0.3
     transform: translateX(100%)
 
+.moveToTop
+  animation: moveToTop .6s ease both
+
+.moveFromTop
+  animation: moveFromTop .6s ease both
+
 .moveToRight
   animation: moveToRight .6s ease both
 
 .moveFromRight
   animation: moveFromRight .6s ease both
+
+.moveToBottom
+  animation: moveToBottom .6s ease both
+
+.moveFromBottom
+  animation: moveFromBottom .6s ease both
 
 .moveToLeft
   animation: moveToLeft .6s ease both

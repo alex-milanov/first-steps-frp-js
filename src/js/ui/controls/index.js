@@ -7,19 +7,37 @@ const {
 } = require('iblokz/adapters/vdom');
 
 const animList = [
+	'moveToTop',
+	'moveFromTop',
 	'moveToLeft',
 	'moveFromLeft',
+	'moveToBottom',
+	'moveFromBottom',
 	'moveToRight',
 	'moveFromRight'
 ];
 
 module.exports = ({state, actions}) => section('.controls', [
+	label('top in/out'),
+	select({on: {change: ev => actions.changeAnim('top', 'in', ev.target.value)}}, animList.map(
+		anim => option({attrs: {selected: anim === state.anim.top.in}, prop: {value: anim}}, anim))
+	),
+	select({on: {change: ev => actions.changeAnim('top', 'out', ev.target.value)}}, animList.map(
+		anim => option({attrs: {selected: anim === state.anim.top.out}, prop: {value: anim}}, anim))
+	),
 	label('left in/out'),
 	select({on: {change: ev => actions.changeAnim('left', 'in', ev.target.value)}}, animList.map(
 		anim => option({attrs: {selected: anim === state.anim.left.in}, prop: {value: anim}}, anim))
 	),
 	select({on: {change: ev => actions.changeAnim('left', 'out', ev.target.value)}}, animList.map(
 		anim => option({attrs: {selected: anim === state.anim.left.out}, prop: {value: anim}}, anim))
+	),
+	label('bottom in/out'),
+	select({on: {change: ev => actions.changeAnim('bottom', 'in', ev.target.value)}}, animList.map(
+		anim => option({attrs: {selected: anim === state.anim.bottom.in}, prop: {value: anim}}, anim))
+	),
+	select({on: {change: ev => actions.changeAnim('bottom', 'out', ev.target.value)}}, animList.map(
+		anim => option({attrs: {selected: anim === state.anim.bottom.out}, prop: {value: anim}}, anim))
 	),
 	label('right in/out'),
 	select({on: {change: ev => actions.changeAnim('right', 'in', ev.target.value)}}, animList.map(

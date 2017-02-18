@@ -16,15 +16,17 @@ const unprettify = html => {
 	return text;
 };
 
-const getDirection = (index, old) => (index > old) ? 'right' : 'left';
 const getInOut = (index, old, i) => (index === i) ? 'in' : 'out';
 
-const prepAnim = (i, {index, old, transitioning, anim}) => Object.assign({
-	active: index === i || (old === i && transitioning === true),
-	onTop: transitioning === true && index === i
+const arrEq = (arr1, arr2) => JSON.stringify(arr1) === JSON.stringify(arr2);
+const arrFlatten = arr => arr.reduce((af, ai) => [].concat(af, ai), []);
+
+const prepAnim = (pos, {index, old, direction, transitioning, anim}) => Object.assign({
+	active: (arrEq(index, pos) || (arrEq(old, pos)) && transitioning === true),
+	onTop: transitioning === true && arrEq(index, pos)
 },
-(transitioning === true && index !== old && (index === i || old === i))
-	? obj.keyValue(anim[getDirection(index, old)][getInOut(index, old, i)], true)
+(transitioning === true && !arrEq(index, old) && (arrEq(index, pos) || arrEq(old, pos)))
+	? obj.keyValue(anim[direction][arrEq(index, pos) ? 'in' : 'out'], true)
 	: {}
 );
 
@@ -36,42 +38,51 @@ const prepAnim = (i, {index, old, transitioning, anim}) => Object.assign({
 
 const slides = [
 	// slide 1
-	span([
+	[span([
 		h2('First Steps in'),
 		h1('Functional Reactive JavaScript')
-	]),
+	])],
 	// slide 2
-	span([
-		h1('creating a Hash'),
-		h2('Converting a collection to a key/value hash:'),
-		pre([code('[type="js"][contenteditable="true"]', {
-			props: {
-				innerHTML: prettify.prettyPrintOne(`
-	const users = [
-		{id: 1, name: 'Bob'},
-		{id: 1, name: 'John'},
-	];
+	[
+		span([
+			h1('creating a Hash'),
+			h2('Converting a collection to a key/value hash:'),
+			pre([code('[type="js"][contenteditable="true"]', {
+				props: {
+					innerHTML: prettify.prettyPrintOne(`
+		const users = [
+			{id: 1, name: 'Bob'},
+			{id: 1, name: 'John'},
+		];
 
-	const hash = users.reduce(
-		(h, u) => ((h[u.id] = u.name), h), {}
-	);
-			`)
-			},
-			on: {
-				input: ({target}) => (target.innerHTML = prettify.prettyPrintOne(unprettify(target.innerHTML)))
-			}
-		})])
-	]),
+		const hash = users.reduce(
+			(h, u) => ((h[u.id] = u.name), h), {}
+		);
+				`)
+				},
+				on: {
+					input: ({target}) => (target.innerHTML = prettify.prettyPrintOne(unprettify(target.innerHTML)))
+				}
+			})])
+		]),
+		span([
+			h1('Slide 2.1'),
+			h2('Some desc here')
+		])
+	],
 	// slide 3
-	span([
+	[span([
 		h1('Slide 3'),
 		h2('Some desc here')
-	])
+	])]
 ];
 
-module.exports = ({state, actions}) => section('.slides[tabindex="0"]', slides.map((slide, i) =>
-	section({
-		class: prepAnim(i, state),
-		on: (state.index === i && state.transitioning) ? {animationend: () => actions.transitionend()} : {}
-	}, [slide])
+module.exports = ({state, actions}) => section('.slides[tabindex="0"]', arrFlatten(slides.map((col, i) =>
+	col.map((slide, k) =>
+		section({
+			class: prepAnim([i, k], state),
+			on: (arrEq(state.index, [i, k]) && state.transitioning)
+				? {animationend: () => actions.transitionend()} : {}
+		}, [slide])
+	))
 ));
