@@ -15353,11 +15353,12 @@ const obj = require('iblokz/common/obj');
 
 // initial
 const initial = {
-	slidesMap: ['', ['', ''], ''],
+	slidesMap: ['', '', ['', '', ''], ''],
 	index: [0, 0],
 	old: [0, 0],
 	transitioning: false,
 	direction: false,
+	controls: false,
 	anim: {
 		top: {
 			in: 'moveFromTop',
@@ -15396,6 +15397,8 @@ const move = direction => state => Object.assign({}, state, {
 	transitioning: true,
 	direction
 });
+
+const toggleControls = () => state => Object.assign({}, state, {controls: !state.controls});
 /*
 const next = () => state => Object.assign({}, state, {
 	index: (state.index < state.slidesCount - 1) ? state.index + 1 : state.index,
@@ -15413,6 +15416,7 @@ const changeAnim = (direction, inOut, animClass) => state => obj.patch(state, ['
 
 module.exports = {
 	initial,
+	toggleControls,
 	move,
 	transitionend,
 	changeAnim
@@ -15462,7 +15466,7 @@ const state$ = actions$
 	.share();
 
 document.addEventListener('keydown', e => {
-	console.log(e.key, e.target);
+	console.log(e.key, e.target, e);
 	if (e.target.contentEditable === 'true') {
 		switch (e.key) {
 			case 'Escape':
@@ -15481,6 +15485,9 @@ document.addEventListener('keydown', e => {
 		}
 		return;
 	}
+	if (e.key === 'E' && e.shiftKey === true && e.ctrlKey === true)
+		actions.toggleControls();
+
 	if (e.key === 'ArrowUp') actions.move('top');
 	if (e.key === 'ArrowRight') actions.move('right');
 	if (e.key === 'ArrowDown') actions.move('bottom');
@@ -15511,7 +15518,9 @@ const animList = [
 	'moveFromRight'
 ];
 
-module.exports = ({state, actions}) => section('.controls', [
+module.exports = ({state, actions}) => section('.controls', {
+	class: {on: state.controls}
+}, [
 	label('top in/out'),
 	select({on: {change: ev => actions.changeAnim('top', 'in', ev.target.value)}}, animList.map(
 		anim => option({attrs: {selected: anim === state.anim.top.in}, prop: {value: anim}}, anim))
@@ -15564,8 +15573,9 @@ module.exports = ({state, actions}) => section('#ui', [
 
 // dom
 const {
-	section, button, span, h1, h2, pre, code,
-	form, fieldset, label, legend, input, select, option
+	section, button, span, h1, h2, h3, pre, code,
+	form, fieldset, label, legend, input, select, option,
+	ul, li
 } = require('iblokz/adapters/vdom');
 
 const obj = require('iblokz/common/obj');
@@ -15598,43 +15608,61 @@ const prepAnim = (pos, {index, old, direction, transitioning, anim}) => Object.a
 // 	moveToRight: transitioning === true && old === i && (index - old) === -1
 // });
 
+const getCode = (html, type = 'js') =>
+	pre([code(`[type="${type}"][contenteditable="true"][spellcheck="false"]`,
+		{props: {innerHTML: prettify.prettyPrintOne(html)}}
+	)]);
+
 const slides = [
 	// slide 1
 	[span([
-		h2('First Steps in'),
-		h1('Functional Reactive JavaScript')
+		h1('First Steps in Functional Reactive JavaScript')
 	])],
 	// slide 2
 	[
 		span([
-			h1('creating a Hash'),
-			h2('Converting a collection to a key/value hash:'),
-			pre([code('[type="js"][contenteditable="true"]', {
-				props: {
-					innerHTML: prettify.prettyPrintOne(`
-		const users = [
-			{id: 1, name: 'Bob'},
-			{id: 1, name: 'John'},
-		];
-
-		const hash = users.reduce(
-			(h, u) => ((h[u.id] = u.name), h), {}
-		);
-				`)
-				},
-				on: {
-					input: ({target}) => (target.innerHTML = prettify.prettyPrintOne(unprettify(target.innerHTML)))
-				}
-			})])
+			h2('JavaScript - The Functional Parts')
+		])
+	],
+	[
+		span([
+			h2('The Function (JavaScript - The Functional Parts)'),
+			ul([
+				li('First Class Citizen'),
+				li('ES.Next Arrow Functions')
+			])
 		]),
 		span([
-			h1('Slide 2.1'),
-			h2('Some desc here')
+			getCode(`
+	// before
+	function getList(model) {
+		return function (req, res) {
+			const Model = mongoose.model(model);
+			Model.find(req.query, function (err, list) {
+				if (err) {
+					return res.status(500).send(err.message);
+				}
+				return res.json({list});
+			});
+		};
+	}
+			`)
+		]),
+		span([
+			getCode(`
+	// after
+	const getList = model => (req, res) =>
+		mongoose.model(model).find(req.query).exec()
+			.then(
+				list => res.json({list})
+				err => res.status(500).send(err.message)
+			);
+			`)
 		])
 	],
 	// slide 3
 	[span([
-		h1('Slide 3'),
+		h1('Slide 4'),
 		h2('Some desc here')
 	])]
 ];

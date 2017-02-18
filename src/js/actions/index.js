@@ -4,11 +4,12 @@ const obj = require('iblokz/common/obj');
 
 // initial
 const initial = {
-	slidesMap: ['', ['', ''], ''],
+	slidesMap: ['', '', ['', '', ''], ''],
 	index: [0, 0],
 	old: [0, 0],
 	transitioning: false,
 	direction: false,
+	controls: false,
 	anim: {
 		top: {
 			in: 'moveFromTop',
@@ -47,6 +48,8 @@ const move = direction => state => Object.assign({}, state, {
 	transitioning: true,
 	direction
 });
+
+const toggleControls = () => state => Object.assign({}, state, {controls: !state.controls});
 /*
 const next = () => state => Object.assign({}, state, {
 	index: (state.index < state.slidesCount - 1) ? state.index + 1 : state.index,
@@ -64,6 +67,7 @@ const changeAnim = (direction, inOut, animClass) => state => obj.patch(state, ['
 
 module.exports = {
 	initial,
+	toggleControls,
 	move,
 	transitionend,
 	changeAnim

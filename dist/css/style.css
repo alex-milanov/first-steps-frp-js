@@ -2707,7 +2707,6 @@ h1, h2, h3, h4, h5 {
 
 .controls {
   display: block;
-  z-index: 1000;
   position: absolute;
   top: 10px;
   right: 10px;
@@ -2715,11 +2714,15 @@ h1, h2, h3, h4, h5 {
   height: 140px;
   border: 1px solid #969dab;
   box-shadow: inset 0px 0px 55px #949fa9;
-  opacity: 0.7;
   cursor: pointer;
-  transition: opacity .2s; }
-  .controls:hover {
-    opacity: 1; }
+  opacity: 0;
+  z-index: -1;
+  transition: opacity .3s; }
+  .controls.on {
+    opacity: 0.7;
+    z-index: 1000; }
+    .controls.on:hover {
+      opacity: 1; }
   .controls label, .controls select, .controls input {
     display: inline-block;
     box-sizing: border-box;
