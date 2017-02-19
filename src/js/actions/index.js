@@ -9,7 +9,10 @@ const initial = {
 	old: [0, 0],
 	transitioning: false,
 	direction: false,
-	controls: false,
+	controls: {
+		on: false,
+		tab: 'anim'
+	},
 	anim: {
 		top: {
 			in: 'moveFromTop',
@@ -49,7 +52,7 @@ const move = direction => state => Object.assign({}, state, {
 	direction
 });
 
-const toggleControls = () => state => Object.assign({}, state, {controls: !state.controls});
+const toggleControls = () => state => obj.patch(state, 'controls', {on: !state.controls.on});
 /*
 const next = () => state => Object.assign({}, state, {
 	index: (state.index < state.slidesCount - 1) ? state.index + 1 : state.index,
@@ -64,11 +67,13 @@ const prev = () => state => Object.assign({}, state, {
 */
 const transitionend = () => state => Object.assign({}, state, {transitioning: false, directon: false});
 const changeAnim = (direction, inOut, animClass) => state => obj.patch(state, ['anim', direction, inOut], animClass);
+const setTab = tab => state => obj.patch(state, 'controls', {tab});
 
 module.exports = {
 	initial,
 	toggleControls,
 	move,
 	transitionend,
-	changeAnim
+	changeAnim,
+	setTab
 };

@@ -3,7 +3,8 @@
 // dom
 const {
 	section, button, span, h1, h2, pre, code,
-	form, fieldset, label, legend, input, select, option
+	form, fieldset, label, legend, input, select, option,
+	ul, li
 } = require('iblokz/adapters/vdom');
 
 const animList = [
@@ -17,9 +18,22 @@ const animList = [
 	'moveFromRight'
 ];
 
+const tabs = {
+	ctrl: 'Control',
+	anim: 'Animation',
+	edit: 'Edit',
+	file: 'File'
+};
+
 module.exports = ({state, actions}) => section('.controls', {
-	class: {on: state.controls}
+	class: {on: state.controls.on}
 }, [
+	ul('.tabs', Object.keys(tabs).map(tab =>
+		li({
+			class: {on: state.controls.tab === tab},
+			on: {click: () => actions.setTab(tab)}
+		}, tabs[tab])
+	)),
 	label('top in/out'),
 	select({on: {change: ev => actions.changeAnim('top', 'in', ev.target.value)}}, animList.map(
 		anim => option({attrs: {selected: anim === state.anim.top.in}, prop: {value: anim}}, anim))

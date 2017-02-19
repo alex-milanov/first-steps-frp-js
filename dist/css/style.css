@@ -2751,7 +2751,7 @@ h1, h2, h3, h4, h5 {
   top: 10px;
   right: 10px;
   width: 400px;
-  height: 140px;
+  height: 160px;
   border: 1px solid #969dab;
   box-shadow: inset 0px 0px 55px #949fa9;
   cursor: pointer;
@@ -2763,6 +2763,28 @@ h1, h2, h3, h4, h5 {
     z-index: 1000; }
     .controls.on:hover {
       opacity: 1; }
+  .controls ul.tabs {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    display: inline-block;
+    height: 24px;
+    line-height: 24px;
+    width: 100%; }
+    .controls ul.tabs li {
+      margin: 0px;
+      padding: 0px;
+      box-sizing: border-box;
+      display: inline-block;
+      height: 24px;
+      line-height: 24px;
+      text-align: center;
+      width: 25%;
+      transition: background .3s; }
+      .controls ul.tabs li.on {
+        background: rgba(170, 170, 170, 0.5); }
+      .controls ul.tabs li:hover {
+        background: rgba(190, 190, 190, 0.5); }
   .controls label, .controls select, .controls input {
     display: inline-block;
     box-sizing: border-box;

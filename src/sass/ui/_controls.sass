@@ -4,7 +4,7 @@
 	top: 10px
 	right: 10px
 	width: 400px
-	height: 140px
+	height: 160px
 	border: 1px solid #969dab
 	box-shadow: inset 0px 0px 55px #949fa9
 	cursor: pointer
@@ -16,6 +16,18 @@
 		z-index: 1000
 		&:hover
 			opacity: 1
+	ul.tabs
+		+header-height(24px)
+		width: 100%
+		li
+			+header-height(24px)
+			text-align: center
+			width: 25%
+			transition: background .3s
+			&.on
+				background: rgba(170, 170, 170, 0.5)
+			&:hover
+				background: rgba(190, 190, 190, 0.5)
 	label, select, input
 		display: inline-block
 		box-sizing: border-box
