@@ -1,5 +1,11 @@
 'use strict';
 
+// lib
+const Rx = require('rx');
+const $ = Rx.Observable;
+
+const prettify = require('code-prettify');
+
 // dom
 const {
 	section, button, span, h1, h2, h3, pre, code,
@@ -8,16 +14,22 @@ const {
 } = require('iblokz/adapters/vdom');
 
 const obj = require('iblokz/common/obj');
-const prettify = require('code-prettify');
 
 const unprettify = html => {
 	const tDiv = document.createElement('div');
-	tDiv.innerHTML = html.replace(/<br>/g, '^^nl^^');
-	const text = tDiv.textContent.replace(/\^\^nl\^\^/g, '\n');
+	tDiv.innerHTML = html
+		.replace(/<\/?ol[^>]*>/g, '')
+		.replace(/<li[^>]*>/g, '')
+		.replace(/<\/li>/g, '^^nl^^')
+		.replace('<br>', '');
+	// console.log(tDiv.innerHTML);
+	const text = tDiv.textContent
+		.replace(/\^\^nl\^\^/g, '\n');
+	// console.log(text);
+	// tDiv.innerHTML = html;
+	// const text = tDiv.textContent;
 	return text;
 };
-
-const getInOut = (index, old, i) => (index === i) ? 'in' : 'out';
 
 const arrEq = (arr1, arr2) => JSON.stringify(arr1) === JSON.stringify(arr2);
 const arrFlatten = arr => arr.reduce((af, ai) => [].concat(af, ai), []);
@@ -31,15 +43,21 @@ const prepAnim = (pos, {index, old, direction, transitioning, anim}) => Object.a
 	: {}
 );
 
-// 	moveFromRight: transitioning === true && index === i && (index - old) === 1,
-// 	moveToLeft: transitioning === true && old === i && (index - old) === 1,
-// 	moveFromLeft: transitioning === true && index === i && (index - old) === -1,
-// 	moveToRight: transitioning === true && old === i && (index - old) === -1
-// });
-
 const getCode = (html, type = 'js') =>
-	pre([code(`[type="${type}"][contenteditable="true"][spellcheck="false"]`,
-		{props: {innerHTML: prettify.prettyPrintOne(html)}}
+	pre([code(`[type="${type}"][contenteditable="true"][spellcheck="false"]`, {
+		props: {
+			innerHTML: prettify.prettyPrintOne(html, type, true)
+		},
+		on: {
+			focus: ({target}) => $.fromEvent(target, 'input')
+				.takeUntil($.fromEvent(target, 'blur'))
+				.debounce(500)
+				.map(ev => ev.target)
+				.subscribe(el => {
+					el.innerHTML = prettify.prettyPrintOne(unprettify(el.innerHTML), type, true);
+				})
+		}
+	}
 	)]);
 
 const slides = [
