@@ -6,31 +6,19 @@ const $ = Rx.Observable;
 
 const prettify = require('code-prettify');
 
+const obj = require('iblokz/common/obj');
+
 // dom
 const {
-	section, button, span, h1, h2, h3, pre, code,
+	section, button, span, h1, h2, h3,
 	form, fieldset, label, legend, input, select, option,
 	ul, li
 } = require('iblokz/adapters/vdom');
 
-const obj = require('iblokz/common/obj');
+// components
+const code = require('./code');
 
-const unprettify = html => {
-	const tDiv = document.createElement('div');
-	tDiv.innerHTML = html
-		.replace(/<\/?ol[^>]*>/g, '')
-		.replace(/<li[^>]*>/g, '')
-		.replace(/<\/li>/g, '^^nl^^')
-		.replace('<br>', '');
-	// console.log(tDiv.innerHTML);
-	const text = tDiv.textContent
-		.replace(/\^\^nl\^\^/g, '\n');
-	// console.log(text);
-	// tDiv.innerHTML = html;
-	// const text = tDiv.textContent;
-	return text;
-};
-
+// util
 const arrEq = (arr1, arr2) => JSON.stringify(arr1) === JSON.stringify(arr2);
 const arrFlatten = arr => arr.reduce((af, ai) => [].concat(af, ai), []);
 
@@ -42,23 +30,6 @@ const prepAnim = (pos, {index, old, direction, transitioning, anim}) => Object.a
 	? obj.keyValue(anim[direction][arrEq(index, pos) ? 'in' : 'out'], true)
 	: {}
 );
-
-const getCode = (html, type = 'js') =>
-	pre([code(`[type="${type}"][contenteditable="true"][spellcheck="false"]`, {
-		props: {
-			innerHTML: prettify.prettyPrintOne(html, type, true)
-		},
-		on: {
-			focus: ({target}) => $.fromEvent(target, 'input')
-				.takeUntil($.fromEvent(target, 'blur'))
-				.debounce(500)
-				.map(ev => ev.target)
-				.subscribe(el => {
-					el.innerHTML = prettify.prettyPrintOne(unprettify(el.innerHTML), type, true);
-				})
-		}
-	}
-	)]);
 
 const slides = [
 	// slide 1
@@ -80,7 +51,7 @@ const slides = [
 			])
 		]),
 		span([
-			getCode(`
+			code(`
 	// before
 	function getList(model) {
 		return function (req, res) {
@@ -96,7 +67,7 @@ const slides = [
 			`)
 		]),
 		span([
-			getCode(`
+			code(`
 	// after
 	const getList = model => (req, res) =>
 		mongoose.model(model).find(req.query).exec()

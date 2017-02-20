@@ -15503,7 +15503,7 @@ document.addEventListener('keydown', e => {
 const ui$ = state$.map(state => ui({state, actions}));
 vdom.patchStream(ui$, '#ui');
 
-},{"./actions":18,"./ui":21,"./util/app":23,"iblokz/adapters/vdom":2,"iblokz/common/arr":3,"iblokz/common/obj":4,"rx":7}],20:[function(require,module,exports){
+},{"./actions":18,"./ui":21,"./util/app":24,"iblokz/adapters/vdom":2,"iblokz/common/arr":3,"iblokz/common/obj":4,"rx":7}],20:[function(require,module,exports){
 'use strict';
 
 // dom
@@ -15587,7 +15587,7 @@ module.exports = ({state, actions}) => section('#ui', [
 	controls({state, actions})
 ]);
 
-},{"./controls":20,"./slides":22,"iblokz/adapters/vdom":2}],22:[function(require,module,exports){
+},{"./controls":20,"./slides":23,"iblokz/adapters/vdom":2}],22:[function(require,module,exports){
 'use strict';
 
 // lib
@@ -15602,8 +15602,6 @@ const {
 	form, fieldset, label, legend, input, select, option,
 	ul, li
 } = require('iblokz/adapters/vdom');
-
-const obj = require('iblokz/common/obj');
 
 const unprettify = html => {
 	const tDiv = document.createElement('div');
@@ -15621,6 +15619,97 @@ const unprettify = html => {
 	return text;
 };
 
+const getParent = (el, tagName) => (el.parentNode.tagName === tagName)
+	? el.parentNode
+	: getParent(el.parentNode, tagName);
+
+const getElIndex = el => Array.from(el.parentNode.children).indexOf(el);
+
+const getRangePoint = (el, offset) =>
+	(el.nodeType === 3 || el.childNodes.length === 0)
+		? ({el, offset: (el.textContent.length < offset) ? el.textContent.length : offset})
+		: Array.from(el.childNodes).reduce(
+			(rp, child) => (rp.el !== el)
+				? rp
+				: (child.textContent.length >= rp.offset)
+					? getRangePoint(child, rp.offset)
+					: {el, offset: rp.offset - child.textContent.length},
+			{el, offset}
+		);
+
+const caret = {
+	get: el => {
+		let range = window.getSelection().getRangeAt(0);
+		let parentLi = (range.startContainer.tagName === 'LI')
+			? range.startContainer : getParent(range.startContainer, 'LI');
+		let colRange = document.createRange();
+		colRange.setStart(parentLi, 0);
+		colRange.setEnd(range.startContainer, range.startOffset);
+		const row = getElIndex(parentLi);
+		const col = colRange.toString().length;
+		return {
+			row,
+			col
+		};
+	},
+	set: (el, pos) => {
+		const parentLi = Array.from(el.querySelectorAll('li'))[pos.row];
+		const rp = getRangePoint(parentLi, pos.col);
+		console.log(rp);
+		let range = document.createRange();
+		range.setStart(rp.el, rp.offset);
+		range.setEnd(rp.el, rp.offset);
+		const sel = window.getSelection();
+		sel.removeAllRanges();
+		sel.addRange(range);
+	}
+};
+
+module.exports = (html, type = 'js') =>
+	pre([code(`[type="${type}"][contenteditable="true"][spellcheck="false"]`, {
+		props: {
+			innerHTML: prettify.prettyPrintOne(html, type, true)
+		},
+		on: {
+			focus: ({target}) => $.fromEvent(target, 'input')
+				.takeUntil($.fromEvent(target, 'blur'))
+				.debounce(200)
+				.map(ev => ev.target)
+				.subscribe(el => {
+					const pos = caret.get(el);
+					el.innerHTML = prettify.prettyPrintOne(unprettify(el.innerHTML), type, true);
+					caret.set(el, pos);
+				}),
+			keyup: ev => {
+				const pos = caret.get(ev.target);
+				console.log(pos);
+			}
+		}
+	}
+)]);
+
+},{"code-prettify":1,"iblokz/adapters/vdom":2,"rx":7}],23:[function(require,module,exports){
+'use strict';
+
+// lib
+const Rx = require('rx');
+const $ = Rx.Observable;
+
+const prettify = require('code-prettify');
+
+const obj = require('iblokz/common/obj');
+
+// dom
+const {
+	section, button, span, h1, h2, h3,
+	form, fieldset, label, legend, input, select, option,
+	ul, li
+} = require('iblokz/adapters/vdom');
+
+// components
+const code = require('./code');
+
+// util
 const arrEq = (arr1, arr2) => JSON.stringify(arr1) === JSON.stringify(arr2);
 const arrFlatten = arr => arr.reduce((af, ai) => [].concat(af, ai), []);
 
@@ -15632,23 +15721,6 @@ const prepAnim = (pos, {index, old, direction, transitioning, anim}) => Object.a
 	? obj.keyValue(anim[direction][arrEq(index, pos) ? 'in' : 'out'], true)
 	: {}
 );
-
-const getCode = (html, type = 'js') =>
-	pre([code(`[type="${type}"][contenteditable="true"][spellcheck="false"]`, {
-		props: {
-			innerHTML: prettify.prettyPrintOne(html, type, true)
-		},
-		on: {
-			focus: ({target}) => $.fromEvent(target, 'input')
-				.takeUntil($.fromEvent(target, 'blur'))
-				.debounce(500)
-				.map(ev => ev.target)
-				.subscribe(el => {
-					el.innerHTML = prettify.prettyPrintOne(unprettify(el.innerHTML), type, true);
-				})
-		}
-	}
-	)]);
 
 const slides = [
 	// slide 1
@@ -15670,7 +15742,7 @@ const slides = [
 			])
 		]),
 		span([
-			getCode(`
+			code(`
 	// before
 	function getList(model) {
 		return function (req, res) {
@@ -15686,7 +15758,7 @@ const slides = [
 			`)
 		]),
 		span([
-			getCode(`
+			code(`
 	// after
 	const getList = model => (req, res) =>
 		mongoose.model(model).find(req.query).exec()
@@ -15714,7 +15786,7 @@ module.exports = ({state, actions}) => section('.slides[tabindex="0"]', arrFlatt
 	))
 ));
 
-},{"code-prettify":1,"iblokz/adapters/vdom":2,"iblokz/common/obj":4,"rx":7}],23:[function(require,module,exports){
+},{"./code":22,"code-prettify":1,"iblokz/adapters/vdom":2,"iblokz/common/obj":4,"rx":7}],24:[function(require,module,exports){
 'use strict';
 
 // lib
