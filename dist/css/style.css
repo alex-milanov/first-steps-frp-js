@@ -2748,11 +2748,12 @@ h1, h2, h3, h4, h5 {
           float: left;
           padding: 10px;
           color: #3e434c;
-          transition: box-shadow .3s;
-          tab-size: 2; }
+          tab-size: 2;
+          transition: box-shadow .3s; }
           .slides section > span .codebin code.example {
             min-width: 480px;
-            border: 1px solid #969dab; }
+            border: 1px solid #969dab;
+            box-shadow: inset 0px 0px 0px #949fa9, 2px 2px 3px transparent; }
             .slides section > span .codebin code.example:focus {
               outline: none;
               box-shadow: inset 0px 0px 55px #949fa9, 2px 2px 3px #8a8f96; }
