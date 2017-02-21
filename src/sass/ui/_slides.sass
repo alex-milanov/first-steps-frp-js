@@ -26,14 +26,26 @@
 				font-size: 3em
 			h2
 				font-size: 1.7em
-			pre
-				border: 1px solid #969dab
+			.codebin
+				min-width: 760px
+				display: inline-block
 				code
-					display: block
+					font-family: monospace
+					font-size: 1em
+					white-space: pre
+					display: inline-block
+					float: left
 					padding: 10px
 					color: #3e434c
 					transition: box-shadow .3s
 					tab-size: 2
-					&:focus
-						outline: none
-						box-shadow: inset 0px 0px 55px #949fa9, 2px 2px 3px #8a8f96
+					&.example
+						min-width: 480px
+						border: 1px solid #969dab
+						&:focus
+							outline: none
+							box-shadow: inset 0px 0px 55px #949fa9, 2px 2px 3px #8a8f96
+					&.console
+						width: 280px
+						.err
+							color: #800

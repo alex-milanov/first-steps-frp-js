@@ -2732,17 +2732,29 @@ h1, h2, h3, h4, h5 {
         font-size: 3em; }
       .slides section > span h2 {
         font-size: 1.7em; }
-      .slides section > span pre {
-        border: 1px solid #969dab; }
-        .slides section > span pre code {
-          display: block;
+      .slides section > span .codebin {
+        min-width: 760px;
+        display: inline-block; }
+        .slides section > span .codebin code {
+          font-family: monospace;
+          font-size: 1em;
+          white-space: pre;
+          display: inline-block;
+          float: left;
           padding: 10px;
           color: #3e434c;
           transition: box-shadow .3s;
           tab-size: 2; }
-          .slides section > span pre code:focus {
-            outline: none;
-            box-shadow: inset 0px 0px 55px #949fa9, 2px 2px 3px #8a8f96; }
+          .slides section > span .codebin code.example {
+            min-width: 480px;
+            border: 1px solid #969dab; }
+            .slides section > span .codebin code.example:focus {
+              outline: none;
+              box-shadow: inset 0px 0px 55px #949fa9, 2px 2px 3px #8a8f96; }
+          .slides section > span .codebin code.console {
+            width: 280px; }
+            .slides section > span .codebin code.console .err {
+              color: #800; }
 
 .controls {
   display: block;

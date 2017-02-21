@@ -5,6 +5,7 @@ const Rx = require('rx');
 const $ = Rx.Observable;
 
 const prettify = require('code-prettify');
+const vm = require('vm');
 
 // dom
 const {
@@ -75,25 +76,55 @@ const caret = {
 	}
 };
 
-module.exports = (html, type = 'js') =>
-	pre([code(`[type="${type}"][contenteditable="true"][spellcheck="false"]`, {
+const sandbox = (source, context = {}, cb) => {
+	let log = [];
+	let err = null;
+	let res = null;
+	try {
+		res = vm.runInNewContext(source, {
+			console: {log: (...args) => log.push(args)}
+		});
+	} catch (e) {
+		err = e;
+	}
+	cb({res, log, err});
+};
+
+module.exports = (html, type = 'js') => span('.codebin', [
+	code(`.example[type="${type}"][contenteditable="true"][spellcheck="false"]`, {
 		props: {
 			innerHTML: prettify.prettyPrintOne(html, type, true)
 		},
 		on: {
-			focus: ({target}) => $.fromEvent(target, 'input')
+			focus: ({target}) => [$.fromEvent(target, 'input')
 				.takeUntil($.fromEvent(target, 'blur'))
-				.debounce(200)
 				.map(ev => ev.target)
-				.subscribe(el => {
-					const pos = caret.get(el);
-					el.innerHTML = prettify.prettyPrintOne(unprettify(el.innerHTML), type, true);
-					caret.set(el, pos);
-				}),
+				.share()
+			].map(inputs$ => $.merge(
+					inputs$.debounce(200).map(el => {
+						const pos = caret.get(el);
+						const sourceCode = unprettify(el.innerHTML);
+						el.innerHTML = prettify.prettyPrintOne(sourceCode, type, true);
+						caret.set(el, pos);
+						return 1;
+					}),
+					inputs$.debounce(500).map(el => {
+						const sourceCode = unprettify(el.innerHTML);
+						sandbox(sourceCode, {}, ({res, log, err}) => {
+							el.parentNode.querySelector('.console').innerHTML = [].concat(
+								err ? [`<p class="err">${err}</p>`] : [],
+								log ? log.map(l => prettify.prettyPrintOne(JSON.stringify(l))) : [],
+								res ? [`> ${res}`] : []
+							).join('\n');
+						});
+						return 1;
+					})
+			)).pop().subscribe(),
 			keyup: ev => {
 				const pos = caret.get(ev.target);
 				console.log(pos);
 			}
 		}
-	}
-)]);
+	}),
+	code('.console')
+]);

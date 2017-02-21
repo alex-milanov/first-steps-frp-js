@@ -1756,7 +1756,7 @@ if (module && module.exports) module.exports = {
 };
 
 }).call(this,"/node_modules/code-prettify/src")
-},{"path":5}],2:[function(require,module,exports){
+},{"path":6}],2:[function(require,module,exports){
 'use strict';
 
 const snabbdom = require('snabbdom');
@@ -1846,7 +1846,7 @@ module.exports = Object.assign(
 	hyperHelpers
 );
 
-},{"../common/obj":4,"snabbdom":16,"snabbdom/h":8,"snabbdom/modules/attributes":11,"snabbdom/modules/class":12,"snabbdom/modules/eventlisteners":13,"snabbdom/modules/props":14,"snabbdom/modules/style":15}],3:[function(require,module,exports){
+},{"../common/obj":4,"snabbdom":17,"snabbdom/h":9,"snabbdom/modules/attributes":12,"snabbdom/modules/class":13,"snabbdom/modules/eventlisteners":14,"snabbdom/modules/props":15,"snabbdom/modules/style":16}],3:[function(require,module,exports){
 'use strict';
 
 const fromList = list => Array.prototype.slice.call(list);
@@ -1901,6 +1901,17 @@ module.exports = {
 };
 
 },{}],5:[function(require,module,exports){
+
+var indexOf = [].indexOf;
+
+module.exports = function(arr, obj){
+  if (indexOf) return arr.indexOf(obj);
+  for (var i = 0; i < arr.length; ++i) {
+    if (arr[i] === obj) return i;
+  }
+  return -1;
+};
+},{}],6:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -2128,7 +2139,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":6}],6:[function(require,module,exports){
+},{"_process":7}],7:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -2310,7 +2321,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 (function (process,global){
 // Copyright (c) Microsoft, All rights reserved. See License.txt in the project root for license information.
 
@@ -14702,7 +14713,7 @@ var ReactiveTest = Rx.ReactiveTest = {
 }.call(this));
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":6}],8:[function(require,module,exports){
+},{"_process":7}],9:[function(require,module,exports){
 var VNode = require('./vnode');
 var is = require('./is');
 
@@ -14738,7 +14749,7 @@ module.exports = function h(sel, b, c) {
   return VNode(sel, data, children, text, undefined);
 };
 
-},{"./is":10,"./vnode":17}],9:[function(require,module,exports){
+},{"./is":11,"./vnode":18}],10:[function(require,module,exports){
 function createElement(tagName){
   return document.createElement(tagName);
 }
@@ -14794,13 +14805,13 @@ module.exports = {
   setTextContent: setTextContent
 };
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 module.exports = {
   array: Array.isArray,
   primitive: function(s) { return typeof s === 'string' || typeof s === 'number'; },
 };
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var NamespaceURIs = {
   "xlink": "http://www.w3.org/1999/xlink"
 };
@@ -14853,7 +14864,7 @@ function updateAttrs(oldVnode, vnode) {
 
 module.exports = {create: updateAttrs, update: updateAttrs};
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 function updateClass(oldVnode, vnode) {
   var cur, name, elm = vnode.elm,
       oldClass = oldVnode.data.class,
@@ -14878,7 +14889,7 @@ function updateClass(oldVnode, vnode) {
 
 module.exports = {create: updateClass, update: updateClass};
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 function invokeHandler(handler, vnode, event) {
   if (typeof handler === "function") {
     // call function handler
@@ -14981,7 +14992,7 @@ module.exports = {
   destroy: updateEventListeners
 };
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 function updateProps(oldVnode, vnode) {
   var key, cur, old, elm = vnode.elm,
       oldProps = oldVnode.data.props, props = vnode.data.props;
@@ -15006,7 +15017,7 @@ function updateProps(oldVnode, vnode) {
 
 module.exports = {create: updateProps, update: updateProps};
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var raf = (typeof window !== 'undefined' && window.requestAnimationFrame) || setTimeout;
 var nextFrame = function(fn) { raf(function() { raf(fn); }); };
 
@@ -15077,7 +15088,7 @@ function applyRemoveStyle(vnode, rm) {
 
 module.exports = {create: updateStyle, update: updateStyle, destroy: applyDestroyStyle, remove: applyRemoveStyle};
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 // jshint newcap: false
 /* global require, module, document, Node */
 'use strict';
@@ -15339,14 +15350,154 @@ function init(modules, api) {
 
 module.exports = {init: init};
 
-},{"./htmldomapi":9,"./is":10,"./vnode":17}],17:[function(require,module,exports){
+},{"./htmldomapi":10,"./is":11,"./vnode":18}],18:[function(require,module,exports){
 module.exports = function(sel, data, children, text, elm) {
   var key = data === undefined ? undefined : data.key;
   return {sel: sel, data: data, children: children,
           text: text, elm: elm, key: key};
 };
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
+var indexOf = require('indexof');
+
+var Object_keys = function (obj) {
+    if (Object.keys) return Object.keys(obj)
+    else {
+        var res = [];
+        for (var key in obj) res.push(key)
+        return res;
+    }
+};
+
+var forEach = function (xs, fn) {
+    if (xs.forEach) return xs.forEach(fn)
+    else for (var i = 0; i < xs.length; i++) {
+        fn(xs[i], i, xs);
+    }
+};
+
+var defineProp = (function() {
+    try {
+        Object.defineProperty({}, '_', {});
+        return function(obj, name, value) {
+            Object.defineProperty(obj, name, {
+                writable: true,
+                enumerable: false,
+                configurable: true,
+                value: value
+            })
+        };
+    } catch(e) {
+        return function(obj, name, value) {
+            obj[name] = value;
+        };
+    }
+}());
+
+var globals = ['Array', 'Boolean', 'Date', 'Error', 'EvalError', 'Function',
+'Infinity', 'JSON', 'Math', 'NaN', 'Number', 'Object', 'RangeError',
+'ReferenceError', 'RegExp', 'String', 'SyntaxError', 'TypeError', 'URIError',
+'decodeURI', 'decodeURIComponent', 'encodeURI', 'encodeURIComponent', 'escape',
+'eval', 'isFinite', 'isNaN', 'parseFloat', 'parseInt', 'undefined', 'unescape'];
+
+function Context() {}
+Context.prototype = {};
+
+var Script = exports.Script = function NodeScript (code) {
+    if (!(this instanceof Script)) return new Script(code);
+    this.code = code;
+};
+
+Script.prototype.runInContext = function (context) {
+    if (!(context instanceof Context)) {
+        throw new TypeError("needs a 'context' argument.");
+    }
+    
+    var iframe = document.createElement('iframe');
+    if (!iframe.style) iframe.style = {};
+    iframe.style.display = 'none';
+    
+    document.body.appendChild(iframe);
+    
+    var win = iframe.contentWindow;
+    var wEval = win.eval, wExecScript = win.execScript;
+
+    if (!wEval && wExecScript) {
+        // win.eval() magically appears when this is called in IE:
+        wExecScript.call(win, 'null');
+        wEval = win.eval;
+    }
+    
+    forEach(Object_keys(context), function (key) {
+        win[key] = context[key];
+    });
+    forEach(globals, function (key) {
+        if (context[key]) {
+            win[key] = context[key];
+        }
+    });
+    
+    var winKeys = Object_keys(win);
+
+    var res = wEval.call(win, this.code);
+    
+    forEach(Object_keys(win), function (key) {
+        // Avoid copying circular objects like `top` and `window` by only
+        // updating existing context properties or new properties in the `win`
+        // that was only introduced after the eval.
+        if (key in context || indexOf(winKeys, key) === -1) {
+            context[key] = win[key];
+        }
+    });
+
+    forEach(globals, function (key) {
+        if (!(key in context)) {
+            defineProp(context, key, win[key]);
+        }
+    });
+    
+    document.body.removeChild(iframe);
+    
+    return res;
+};
+
+Script.prototype.runInThisContext = function () {
+    return eval(this.code); // maybe...
+};
+
+Script.prototype.runInNewContext = function (context) {
+    var ctx = Script.createContext(context);
+    var res = this.runInContext(ctx);
+
+    forEach(Object_keys(ctx), function (key) {
+        context[key] = ctx[key];
+    });
+
+    return res;
+};
+
+forEach(Object_keys(Script.prototype), function (name) {
+    exports[name] = Script[name] = function (code) {
+        var s = Script(code);
+        return s[name].apply(s, [].slice.call(arguments, 1));
+    };
+});
+
+exports.createScript = function (code) {
+    return exports.Script(code);
+};
+
+exports.createContext = Script.createContext = function (context) {
+    var copy = new Context();
+    if(typeof context === 'object') {
+        forEach(Object_keys(context), function (key) {
+            copy[key] = context[key];
+        });
+    }
+    return copy;
+};
+
+},{"indexof":5}],20:[function(require,module,exports){
 'use strict';
 
 const obj = require('iblokz/common/obj');
@@ -15427,7 +15578,7 @@ module.exports = {
 	setTab
 };
 
-},{"iblokz/common/obj":4}],19:[function(require,module,exports){
+},{"iblokz/common/obj":4}],21:[function(require,module,exports){
 'use strict';
 
 // lib
@@ -15503,7 +15654,7 @@ document.addEventListener('keydown', e => {
 const ui$ = state$.map(state => ui({state, actions}));
 vdom.patchStream(ui$, '#ui');
 
-},{"./actions":18,"./ui":21,"./util/app":24,"iblokz/adapters/vdom":2,"iblokz/common/arr":3,"iblokz/common/obj":4,"rx":7}],20:[function(require,module,exports){
+},{"./actions":20,"./ui":23,"./util/app":26,"iblokz/adapters/vdom":2,"iblokz/common/arr":3,"iblokz/common/obj":4,"rx":8}],22:[function(require,module,exports){
 'use strict';
 
 // dom
@@ -15570,7 +15721,7 @@ module.exports = ({state, actions}) => section('.controls', {
 	)
 ]);
 
-},{"iblokz/adapters/vdom":2}],21:[function(require,module,exports){
+},{"iblokz/adapters/vdom":2}],23:[function(require,module,exports){
 'use strict';
 
 // dom
@@ -15587,7 +15738,7 @@ module.exports = ({state, actions}) => section('#ui', [
 	controls({state, actions})
 ]);
 
-},{"./controls":20,"./slides":23,"iblokz/adapters/vdom":2}],22:[function(require,module,exports){
+},{"./controls":22,"./slides":25,"iblokz/adapters/vdom":2}],24:[function(require,module,exports){
 'use strict';
 
 // lib
@@ -15595,6 +15746,7 @@ const Rx = require('rx');
 const $ = Rx.Observable;
 
 const prettify = require('code-prettify');
+const vm = require('vm');
 
 // dom
 const {
@@ -15665,30 +15817,60 @@ const caret = {
 	}
 };
 
-module.exports = (html, type = 'js') =>
-	pre([code(`[type="${type}"][contenteditable="true"][spellcheck="false"]`, {
+const sandbox = (source, context = {}, cb) => {
+	let log = [];
+	let err = null;
+	let res = null;
+	try {
+		res = vm.runInNewContext(source, {
+			console: {log: (...args) => log.push(args)}
+		});
+	} catch (e) {
+		err = e;
+	}
+	cb({res, log, err});
+};
+
+module.exports = (html, type = 'js') => span('.codebin', [
+	code(`.example[type="${type}"][contenteditable="true"][spellcheck="false"]`, {
 		props: {
 			innerHTML: prettify.prettyPrintOne(html, type, true)
 		},
 		on: {
-			focus: ({target}) => $.fromEvent(target, 'input')
+			focus: ({target}) => [$.fromEvent(target, 'input')
 				.takeUntil($.fromEvent(target, 'blur'))
-				.debounce(200)
 				.map(ev => ev.target)
-				.subscribe(el => {
-					const pos = caret.get(el);
-					el.innerHTML = prettify.prettyPrintOne(unprettify(el.innerHTML), type, true);
-					caret.set(el, pos);
-				}),
+				.share()
+			].map(inputs$ => $.merge(
+					inputs$.debounce(200).map(el => {
+						const pos = caret.get(el);
+						const sourceCode = unprettify(el.innerHTML);
+						el.innerHTML = prettify.prettyPrintOne(sourceCode, type, true);
+						caret.set(el, pos);
+						return 1;
+					}),
+					inputs$.debounce(500).map(el => {
+						const sourceCode = unprettify(el.innerHTML);
+						sandbox(sourceCode, {}, ({res, log, err}) => {
+							el.parentNode.querySelector('.console').innerHTML = [].concat(
+								err ? [`<p class="err">${err}</p>`] : [],
+								log ? log.map(l => prettify.prettyPrintOne(JSON.stringify(l))) : [],
+								res ? [`> ${res}`] : []
+							).join('\n');
+						});
+						return 1;
+					})
+			)).pop().subscribe(),
 			keyup: ev => {
 				const pos = caret.get(ev.target);
 				console.log(pos);
 			}
 		}
-	}
-)]);
+	}),
+	code('.console')
+]);
 
-},{"code-prettify":1,"iblokz/adapters/vdom":2,"rx":7}],23:[function(require,module,exports){
+},{"code-prettify":1,"iblokz/adapters/vdom":2,"rx":8,"vm":19}],25:[function(require,module,exports){
 'use strict';
 
 // lib
@@ -15786,7 +15968,7 @@ module.exports = ({state, actions}) => section('.slides[tabindex="0"]', arrFlatt
 	))
 ));
 
-},{"./code":22,"code-prettify":1,"iblokz/adapters/vdom":2,"iblokz/common/obj":4,"rx":7}],24:[function(require,module,exports){
+},{"./code":24,"code-prettify":1,"iblokz/adapters/vdom":2,"iblokz/common/obj":4,"rx":8}],26:[function(require,module,exports){
 'use strict';
 
 // lib
@@ -15813,4 +15995,4 @@ module.exports = {
 	adapt
 };
 
-},{"iblokz/common/arr":3,"iblokz/common/obj":4,"rx":7}]},{},[19]);
+},{"iblokz/common/arr":3,"iblokz/common/obj":4,"rx":8}]},{},[21]);
