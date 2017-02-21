@@ -2725,14 +2725,19 @@ h1, h2, h3, h4, h5 {
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%); }
+      transform: translate(-50%, -50%);
+      min-width: 480px; }
       .slides section > span h1, .slides section > span h2 {
         text-align: center; }
       .slides section > span h1 {
         font-size: 3em; }
       .slides section > span h2 {
-        font-size: 1.7em; }
+        font-size: 2.5em;
+        margin: 20px 0px; }
+      .slides section > span ul {
+        font-size: 1.4em; }
       .slides section > span .codebin {
+        margin: 10px 0px;
         min-width: 760px;
         display: inline-block; }
         .slides section > span .codebin code {

@@ -39,16 +39,62 @@ const slides = [
 	// slide 2
 	[
 		span([
+			h2('The road so far')
+		]),
+		span([
+			h2('Functional vs Imperative')
+		]),
+		span([
+			h2('Functional vs OOP')
+		])
+	],
+	[
+		span([
 			h2('JavaScript - The Functional Parts')
 		])
 	],
 	[
 		span([
-			h2('The Function (JavaScript - The Functional Parts)'),
+			h2('The Function'),
 			ul([
-				li('First Class Citizen'),
-				li('ES.Next Arrow Functions')
+				li('First Class Sitizen'),
+				li('ES6 Arrow Functions'),
+				li('Promises')
 			])
+		]),
+		span([
+			h2('ES6 Arrow Functions'),
+			code(`
+	// before
+	function plusOneOld(num) {
+		return num + 1;
+	}
+
+	// after
+	const plusOneNew = num => num + 1;
+
+	plusOneOld(2);
+			`)
+		]),
+		span([
+			h2('Promises, Promises ...'),
+			code(`
+	const User = mongoose.model('User');
+
+	// before
+	User.find({}, function (err, list) {
+		if (err) {
+			return console.log(err.message);
+		}
+		return console.log({list});
+	});
+
+	// after
+	User.find({}).exec()
+		.catch(err => console.log(err.message))
+		.then(list => console.log(list));
+
+			`)
 		]),
 		span([
 			code(`
@@ -65,24 +111,46 @@ const slides = [
 		};
 	}
 			`)
+		])
+	],
+	[
+		span([
+			h2('Data Operations'),
+			ul([
+				li('Array Operations'),
+				li('Object Operations'),
+				li('Complex Operations'),
+				li('State')
+			])
 		]),
 		span([
+			h2('Array Operations'),
 			code(`
-	// after
-	const getList = model => (req, res) =>
-		mongoose.model(model).find(req.query).exec()
-			.then(
-				list => res.json({list})
-				err => res.status(500).send(err.message)
-			);
+	// initial
+	const arr1 = [1, 2, 3, 4, 5];
+	console.log('initial', arr1);
+
+	// map
+	const arr2 = arr1.map(n => n * 10);
+	console.log('map', arr2);
+
+	// filter
+	const arr3 = arr1.filter(n => n > 2);
+	console.log('filter', arr3);
+
+	// reduce
+	const arr4 = arr1.reduce((sum, n) => sum + n, 0);
+	console.log('reduce', arr4);
 			`)
 		])
 	],
 	// slide 3
 	[span([
-		h1('Slide 4'),
-		h2('Some desc here')
+		h1('Reactive Programming')
 	])]
+	// data operations -> stream operations
+	// stream operators
+	// examples
 ];
 
 module.exports = ({state, actions}) => section('.slides[tabindex="0"]', arrFlatten(slides.map((col, i) =>

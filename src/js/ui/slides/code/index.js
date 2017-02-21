@@ -90,15 +90,15 @@ const sandbox = (source, context = {}, cb) => {
 	cb({res, log, err});
 };
 
-module.exports = (html, type = 'js') => span('.codebin', [
+module.exports = (source, type = 'js') => span('.codebin', [
 	code(`.example[type="${type}"][contenteditable="true"][spellcheck="false"]`, {
 		props: {
-			innerHTML: prettify.prettyPrintOne(html, type, true)
+			innerHTML: prettify.prettyPrintOne(source, type, true)
 		},
 		on: {
 			focus: ({target}) => [$.fromEvent(target, 'input')
-				.takeUntil($.fromEvent(target, 'blur'))
 				.map(ev => ev.target)
+				.takeUntil($.fromEvent(target, 'blur'))
 				.share()
 			].map(inputs$ => $.merge(
 					inputs$.debounce(200).map(el => {
@@ -115,7 +115,7 @@ module.exports = (html, type = 'js') => span('.codebin', [
 								err ? [`<p class="err">${err}</p>`] : [],
 								log ? log.map(l => prettify.prettyPrintOne(JSON.stringify(l))) : [],
 								res ? [`> ${res}`] : []
-							).join('\n');
+							).join('\n\n');
 						});
 						return 1;
 					})
@@ -126,5 +126,15 @@ module.exports = (html, type = 'js') => span('.codebin', [
 			}
 		}
 	}),
-	code('.console')
+	code('.console', {
+		hook: {
+			insert: ({elm}) => sandbox(source, {}, ({res, log, err}) => {
+				elm.innerHTML = [].concat(
+					err ? [`<p class="err">${err}</p>`] : [],
+					log ? log.map(l => prettify.prettyPrintOne(JSON.stringify(l))) : [],
+					res ? [`> ${res}`] : []
+				).join('\n\n');
+			})
+		}
+	})
 ]);

@@ -4,7 +4,7 @@ const obj = require('iblokz/common/obj');
 
 // initial
 const initial = {
-	slidesMap: ['', '', ['', '', ''], ''],
+	slidesMap: ['', '', '', ['', '', '', '', '', ''], ['', ''], ''],
 	index: [0, 0],
 	old: [0, 0],
 	transitioning: false,
