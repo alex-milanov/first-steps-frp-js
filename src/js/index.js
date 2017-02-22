@@ -4,13 +4,15 @@
 const Rx = require('rx');
 const $ = Rx.Observable;
 
+window.marked = require('marked');
+
 // iblokz
 const vdom = require('iblokz/adapters/vdom');
 const obj = require('iblokz/common/obj');
 const arr = require('iblokz/common/arr');
 
 // app
-const app = require('./util/app');
+const app = require('iblokz/app/util');
 let actions = app.adapt(require('./actions'));
 let ui = require('./ui');
 let actions$;
@@ -70,5 +72,22 @@ document.addEventListener('keydown', e => {
 });
 
 // state -> ui
-const ui$ = state$.map(state => ui({state, actions}));
+const ui$ = state$.map(state => ui({state, actions}))
+	.map(uiTree => (console.log({uiTree}), uiTree));
+
 vdom.patchStream(ui$, '#ui');
+
+actions.loadSlides();
+
+window.setTimeout(() => {
+	if (window.LiveReload) {
+		window.LiveReload.reloader.reloadPage = (...args) => console.log({reloadPage: args});
+		const _reload = window.LiveReload.reloader.reload.bind(window.LiveReload.reloader);
+		window.LiveReload.reloader.reload = (...args) => {
+			console.log({reload: args});
+			if (args[0].match(/slides\.md$/i)) actions.loadSlides();
+			_reload(...args);
+		};
+	}
+	// window.LiveReload.on('reload', (...args) => console.log({reload: args}));
+}, 1000);

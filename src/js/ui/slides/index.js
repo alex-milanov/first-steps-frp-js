@@ -10,7 +10,7 @@ const obj = require('iblokz/common/obj');
 
 // dom
 const {
-	section, button, span, h1, h2, h3,
+	h, section, button, span, h1, h2, h3,
 	form, fieldset, label, legend, input, select, option,
 	ul, li
 } = require('iblokz/adapters/vdom');
@@ -48,18 +48,20 @@ const slides = [
 			h2('Functional vs OOP')
 		])
 	],
+	// slide 3
 	[
 		span([
 			h2('JavaScript - The Functional Parts')
 		])
 	],
+	// slide 4
 	[
 		span([
 			h2('The Function'),
 			ul([
 				li('First Class Sitizen'),
 				li('ES6 Arrow Functions'),
-				li('Promises')
+				li('Higher Order Functions')
 			])
 		]),
 		span([
@@ -74,26 +76,6 @@ const slides = [
 	const plusOneNew = num => num + 1;
 
 	plusOneOld(2);
-			`)
-		]),
-		span([
-			h2('Promises, Promises ...'),
-			code(`
-	const User = mongoose.model('User');
-
-	// before
-	User.find({}, function (err, list) {
-		if (err) {
-			return console.log(err.message);
-		}
-		return console.log({list});
-	});
-
-	// after
-	User.find({}).exec()
-		.catch(err => console.log(err.message))
-		.then(list => console.log(list));
-
 			`)
 		]),
 		span([
@@ -113,9 +95,10 @@ const slides = [
 			`)
 		])
 	],
+	// slide 5
 	[
 		span([
-			h2('Data Operations'),
+			h2('Data Operations with Higher Order Functions'),
 			ul([
 				li('Array Operations'),
 				li('Object Operations'),
@@ -144,7 +127,11 @@ const slides = [
 			`)
 		])
 	],
-	// slide 3
+	// slide 6
+	[span([
+		h1('Asynchronisity')
+	])],
+	// slide 7
 	[span([
 		h1('Reactive Programming')
 	])]
@@ -153,12 +140,21 @@ const slides = [
 	// examples
 ];
 
-module.exports = ({state, actions}) => section('.slides[tabindex="0"]', arrFlatten(slides.map((col, i) =>
-	col.map((slide, k) =>
-		section({
-			class: prepAnim([i, k], state),
-			on: (arrEq(state.index, [i, k]) && state.transitioning)
-				? {animationend: () => actions.transitionend()} : {}
-		}, [slide])
-	))
-));
+const parseEl = el => (el.type === 'code')
+	? code(el.text)
+	: h(el.tag, el.text || el.children && el.children.map(parseEl) || '');
+
+const parseSlides = slides => slides.map(col =>
+	col.map(parseEl)
+);
+
+module.exports = ({state, actions}) => section('.slides[tabindex="0"]',
+	arrFlatten(parseSlides(state.slides).map((col, i) =>
+		col.map((slide, k) =>
+			section({
+				class: prepAnim([i, k], state),
+				on: (arrEq(state.index, [i, k]) && state.transitioning)
+					? {animationend: () => actions.transitionend()} : {}
+			}, [slide])
+		))
+	));

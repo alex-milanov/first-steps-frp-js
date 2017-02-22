@@ -1,10 +1,13 @@
 'use strict';
 
 const obj = require('iblokz/common/obj');
+const request = require('iblokz/adapters/request');
+const marked = require('marked');
 
 // initial
 const initial = {
 	slidesMap: ['', '', '', ['', '', '', '', '', ''], ['', ''], ''],
+	slides: [],
 	index: [0, 0],
 	old: [0, 0],
 	transitioning: false,
@@ -34,13 +37,13 @@ const initial = {
 };
 
 const directionMap = {
-	top: ({index, slidesMap}) => (slidesMap[index[0]] instanceof Array && index[1] > 0)
+	top: ({index, slides}) => (slides[index[0]] instanceof Array && index[1] > 0)
 		? [index[0], index[1] - 1] : index,
-	left: ({index, slidesMap}) => (index[0] > 0)
+	left: ({index, slides}) => (index[0] > 0)
 		? [index[0] - 1, 0] : index,
-	bottom: ({index, slidesMap}) => (slidesMap[index[0]] instanceof Array && (index[1] < slidesMap[index[0]].length - 1))
+	bottom: ({index, slides}) => (slides[index[0]] instanceof Array && (index[1] < slides[index[0]].length - 1))
 		? [index[0], index[1] + 1] : index,
-	right: ({index, slidesMap}) => (index[0] < slidesMap.length - 1)
+	right: ({index, slides}) => (index[0] < slides.length - 1)
 		? [index[0] + 1, 0] : index
 };
 
@@ -69,8 +72,43 @@ const transitionend = () => state => Object.assign({}, state, {transitioning: fa
 const changeAnim = (direction, inOut, animClass) => state => obj.patch(state, ['anim', direction, inOut], animClass);
 const setTab = tab => state => obj.patch(state, 'controls', {tab});
 
+const parseSlides = list => list.reduce((slides, el) => {
+	switch (el.type) {
+		case 'heading':
+			if (el.depth <= 2) {
+				slides.push([{
+					tag: 'span',
+					children: [{tag: `h${el.depth}`, text: el.text}]
+				}]);
+			} else {
+				slides[slides.length - 1].push({
+					tag: 'span',
+					children: [{tag: `h${el.depth}`, text: el.text}]
+				});
+			}
+			break;
+		case 'code':
+			slides[slides.length - 1][slides[slides.length - 1].length - 1].children.push({
+				tag: 'code',
+				text: el.text,
+				type: el.type || 'js'
+			});
+			break;
+		default:
+			break;
+	}
+	return slides;
+}, []);
+
+const loadSlides = () => request.get('assets/md/slides.md').observe()
+	.map(req => marked.lexer(req.text))
+	.map(slides => (console.log({slides}), slides))
+	.map(raw => parseSlides(raw))
+	.map(slides => state => Object.assign({}, state, {slides}));
+
 module.exports = {
 	initial,
+	loadSlides,
 	toggleControls,
 	move,
 	transitionend,
