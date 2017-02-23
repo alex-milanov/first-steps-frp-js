@@ -113,8 +113,8 @@ module.exports = (source, type = 'js') => span('.codebin', [
 						sandbox(sourceCode, {}, ({res, log, err}) => {
 							el.parentNode.querySelector('.console').innerHTML = [].concat(
 								err ? [`<p class="err">${err}</p>`] : [],
-								log ? log.map(l => prettify.prettyPrintOne(JSON.stringify(l))) : [],
-								res ? [`> ${res}`] : []
+								log ? log.map(l => prettify.prettyPrintOne(JSON.stringify(l))) : []
+								// res ? [`> ${res}`] : []
 							).join('\n\n');
 						});
 						return 1;
@@ -131,8 +131,8 @@ module.exports = (source, type = 'js') => span('.codebin', [
 			insert: ({elm}) => sandbox(source, {}, ({res, log, err}) => {
 				elm.innerHTML = [].concat(
 					err ? [`<p class="err">${err}</p>`] : [],
-					log ? log.map(l => prettify.prettyPrintOne(JSON.stringify(l))) : [],
-					res ? [`> ${res}`] : []
+					log ? log.map(l => prettify.prettyPrintOne(JSON.stringify(l))) : []
+					// res ? [`> ${res}`] : []
 				).join('\n\n');
 			})
 		}

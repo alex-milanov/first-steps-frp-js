@@ -21,22 +21,30 @@
 		> span
 			+centerer
 			min-width: 480px
-			h1, h2
+			h1, h2, h3
 				text-align: center
 			h1
 				font-size: 3em
-			h2
+			h2, h3
 				font-size: 2.5em
 				margin: 20px 0px
-			ul
+			ul, p
 				font-size: 1.4em
+			p
+				text-align: center
+				margin: 0px
+			a
+				text-decoration: none
+			img
+				max-height: 100%
+				max-width: 100%
 			.codebin
 				margin: 10px 0px
-				min-width: 760px
+				min-width: 800px
 				display: inline-block
 				code
 					font-family: monospace
-					font-size: 1em
+					font-size: 1.1em
 					white-space: pre
 					display: inline-block
 					float: left
@@ -45,7 +53,7 @@
 					tab-size: 2
 					transition: box-shadow .3s
 					&.example
-						min-width: 480px
+						min-width: 500px
 						border: 1px solid #969dab
 						box-shadow: inset 0px 0px 0px #949fa9, 2px 2px 3px rgba(0,0,0,0)
 						&:focus

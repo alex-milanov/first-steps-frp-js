@@ -2,16 +2,27 @@
 
 ## The Story so far
 
-### Functional vs Imperative
+## Functional Programming
 
-### Functional vs OOP
+### Imperative Programming
+```
+	let a = 1;
+	let max = 10;
+	while (a < max) {
+		a++;
+	}
+	console.log(a);
+```
 
-## JavaScript - The Functional Parts
+### Haskell is Useless
+[Simon Peyton Jones - Haskell is useless](https://www.youtube.com/watch?v=iSmkqocn0oQ)
+![nirvana](./assets/img/nirvana.png)
 
 ## The Function
 
 - First Class Sitizen
 - ES6 Arrow Functions
+- Pure Functions
 - Higher Order Functions
 
 ### ES6 Arrow Functions
@@ -28,11 +39,8 @@
 	plusOneOld(2);
 ```
 
-## Data Operations with Higher Order Functions
+### Higher Order Functions
 
-- Array Operations
-- Object Operations
-- Complex Operations
 
 ### Array Operations
 
@@ -56,6 +64,29 @@ console.log('reduce', arr4);
 
 ## Async Operations
 
+### Callback Hell
+
+### Promises
+
 ## Reactive Programming
 
-## Examples
+## References
+[Simon Peyton Jones - Haskell is useless](https://www.youtube.com/watch?v=iSmkqocn0oQ)
+
+~
+
+[FunFunFunction - Functional programming in JavaScript](https://www.youtube.com/playlist?list=PL0zVEGEvSaeEd9hlmCXrk5yUyqUag-n84)
+
+~
+
+[Mostly Adequate Guide to Functional Programming](https://github.com/MostlyAdequate/mostly-adequate-guide)
+
+~
+
+[RxMarbles.com](http://rxmarbles.com/)
+
+~
+
+Egghead.io
+
+## Live Coding

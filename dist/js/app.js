@@ -18805,19 +18805,19 @@ const initial = {
 	anim: {
 		top: {
 			in: 'moveFromTop',
-			out: 'moveToBottom'
+			out: 'scaleDown'
 		},
 		left: {
 			in: 'moveFromLeft',
-			out: 'moveToRight'
+			out: 'scaleDown'
 		},
 		bottom: {
 			in: 'moveFromBottom',
-			out: 'moveToTop'
+			out: 'scaleDown'
 		},
 		right: {
 			in: 'moveFromRight',
-			out: 'moveToLeft'
+			out: 'scaleDown'
 		}
 	}
 };
@@ -18858,7 +18858,7 @@ const transitionend = () => state => Object.assign({}, state, {transitioning: fa
 const changeAnim = (direction, inOut, animClass) => state => obj.patch(state, ['anim', direction, inOut], animClass);
 const setTab = tab => state => obj.patch(state, 'controls', {tab});
 
-const parseSlides = list => list.reduce((slides, el) => {
+const parseSlides = list => list.reduce((slides, el, i) => {
 	switch (el.type) {
 		case 'heading':
 			if (el.depth <= 2) {
@@ -18872,6 +18872,33 @@ const parseSlides = list => list.reduce((slides, el) => {
 					children: [{tag: `h${el.depth}`, text: el.text}]
 				});
 			}
+			break;
+		case 'list_start':
+			slides[slides.length - 1][slides[slides.length - 1].length - 1].children.push({
+				tag: el.ordered ? 'ol' : 'ul',
+				children: []
+			});
+			break;
+		case 'text':
+			if (list[i - 1].type === 'list_item_start') {
+				slides[slides.length - 1][slides[slides.length - 1].length - 1].children[
+					slides[slides.length - 1][slides[slides.length - 1].length - 1].children.length - 1
+				].children.push({
+					tag: 'li',
+					text: el.text
+				});
+			} else {
+				slides[slides.length - 1][slides[slides.length - 1].length - 1].children.push({
+					tag: 'p',
+					text: el.text
+				});
+			}
+			break;
+		case 'paragraph':
+			slides[slides.length - 1][slides[slides.length - 1].length - 1].children.push({
+				tag: 'p',
+				text: el.text
+			});
 			break;
 		case 'code':
 			slides[slides.length - 1][slides[slides.length - 1].length - 1].children.push({
@@ -18887,7 +18914,11 @@ const parseSlides = list => list.reduce((slides, el) => {
 }, []);
 
 const loadSlides = () => request.get('assets/md/slides.md').observe()
-	.map(req => marked.lexer(req.text))
+	.map(req => marked.lexer(req.text, marked.defaults))
+	.map(slides => (console.log({slides}), slides))
+	.map(slides => slides.map(el =>
+		(el.type === 'paragraph') ? obj.patch(el, 'text', marked.inlineLexer(el.text, slides.links)) : el)
+	)
 	.map(slides => (console.log({slides}), slides))
 	.map(raw => parseSlides(raw))
 	.map(slides => state => Object.assign({}, state, {slides}));
@@ -19015,7 +19046,9 @@ const animList = [
 	'moveToBottom',
 	'moveFromBottom',
 	'moveToRight',
-	'moveFromRight'
+	'moveFromRight',
+	'scaleDown',
+	'scaleUp'
 ];
 
 const tabs = {
@@ -19197,8 +19230,8 @@ module.exports = (source, type = 'js') => span('.codebin', [
 						sandbox(sourceCode, {}, ({res, log, err}) => {
 							el.parentNode.querySelector('.console').innerHTML = [].concat(
 								err ? [`<p class="err">${err}</p>`] : [],
-								log ? log.map(l => prettify.prettyPrintOne(JSON.stringify(l))) : [],
-								res ? [`> ${res}`] : []
+								log ? log.map(l => prettify.prettyPrintOne(JSON.stringify(l))) : []
+								// res ? [`> ${res}`] : []
 							).join('\n\n');
 						});
 						return 1;
@@ -19215,8 +19248,8 @@ module.exports = (source, type = 'js') => span('.codebin', [
 			insert: ({elm}) => sandbox(source, {}, ({res, log, err}) => {
 				elm.innerHTML = [].concat(
 					err ? [`<p class="err">${err}</p>`] : [],
-					log ? log.map(l => prettify.prettyPrintOne(JSON.stringify(l))) : [],
-					res ? [`> ${res}`] : []
+					log ? log.map(l => prettify.prettyPrintOne(JSON.stringify(l))) : []
+					// res ? [`> ${res}`] : []
 				).join('\n\n');
 			})
 		}
@@ -19238,7 +19271,7 @@ const obj = require('iblokz/common/obj');
 const {
 	h, section, button, span, h1, h2, h3,
 	form, fieldset, label, legend, input, select, option,
-	ul, li
+	ul, li, p
 } = require('iblokz/adapters/vdom');
 
 // components
@@ -19257,118 +19290,11 @@ const prepAnim = (pos, {index, old, direction, transitioning, anim}) => Object.a
 	: {}
 );
 
-const slides = [
-	// slide 1
-	[span([
-		h1('First Steps in Functional Reactive JavaScript')
-	])],
-	// slide 2
-	[
-		span([
-			h2('The road so far')
-		]),
-		span([
-			h2('Functional vs Imperative')
-		]),
-		span([
-			h2('Functional vs OOP')
-		])
-	],
-	// slide 3
-	[
-		span([
-			h2('JavaScript - The Functional Parts')
-		])
-	],
-	// slide 4
-	[
-		span([
-			h2('The Function'),
-			ul([
-				li('First Class Sitizen'),
-				li('ES6 Arrow Functions'),
-				li('Higher Order Functions')
-			])
-		]),
-		span([
-			h2('ES6 Arrow Functions'),
-			code(`
-	// before
-	function plusOneOld(num) {
-		return num + 1;
-	}
-
-	// after
-	const plusOneNew = num => num + 1;
-
-	plusOneOld(2);
-			`)
-		]),
-		span([
-			code(`
-	// before
-	function getList(model) {
-		return function (req, res) {
-			const Model = mongoose.model(model);
-			Model.find(req.query, function (err, list) {
-				if (err) {
-					return res.status(500).send(err.message);
-				}
-				return res.json({list});
-			});
-		};
-	}
-			`)
-		])
-	],
-	// slide 5
-	[
-		span([
-			h2('Data Operations with Higher Order Functions'),
-			ul([
-				li('Array Operations'),
-				li('Object Operations'),
-				li('Complex Operations'),
-				li('State')
-			])
-		]),
-		span([
-			h2('Array Operations'),
-			code(`
-	// initial
-	const arr1 = [1, 2, 3, 4, 5];
-	console.log('initial', arr1);
-
-	// map
-	const arr2 = arr1.map(n => n * 10);
-	console.log('map', arr2);
-
-	// filter
-	const arr3 = arr1.filter(n => n > 2);
-	console.log('filter', arr3);
-
-	// reduce
-	const arr4 = arr1.reduce((sum, n) => sum + n, 0);
-	console.log('reduce', arr4);
-			`)
-		])
-	],
-	// slide 6
-	[span([
-		h1('Asynchronisity')
-	])],
-	// slide 7
-	[span([
-		h1('Reactive Programming')
-	])]
-	// data operations -> stream operations
-	// stream operators
-	// examples
-];
-
-const parseEl = el => (el.type === 'code')
+const parseEl = el => (el.tag === 'code')
 	? code(el.text)
-	: h(el.tag, el.text || el.children && el.children.map(parseEl) || '');
+	: (el.tag === 'p')
+		? p({props: {innerHTML: el.text}})
+		: h(el.tag, el.text || el.children && el.children.map(parseEl) || '');
 
 const parseSlides = slides => slides.map(col =>
 	col.map(parseEl)

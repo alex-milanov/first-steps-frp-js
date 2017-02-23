@@ -15,7 +15,9 @@ const animList = [
 	'moveToBottom',
 	'moveFromBottom',
 	'moveToRight',
-	'moveFromRight'
+	'moveFromRight',
+	'scaleDown',
+	'scaleUp'
 ];
 
 const tabs = {
