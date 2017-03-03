@@ -19199,7 +19199,9 @@ const sandbox = (source, context = {}, cb) => {
 	let res = null;
 	try {
 		res = vm.runInNewContext(source, {
-			console: {log: (...args) => log.push(args)}
+			console: {log: (...args) => log.push(args)},
+			Rx,
+			$
 		});
 	} catch (e) {
 		err = e;

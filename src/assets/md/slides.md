@@ -4,7 +4,7 @@
 
 ## Functional Programming
 
-### Imperative Programming
+### Imperative vs Functional
 ```
 	let a = 1;
 	let max = 10;
@@ -14,6 +14,8 @@
 	console.log(a);
 ```
 
+### State and Operations
+
 ### Haskell is Useless
 [Simon Peyton Jones - Haskell is useless](https://www.youtube.com/watch?v=iSmkqocn0oQ)
 ![nirvana](./assets/img/nirvana.png)
@@ -21,7 +23,6 @@
 ## The Function
 
 - First Class Sitizen
-- ES6 Arrow Functions
 - Pure Functions
 - Higher Order Functions
 
@@ -39,7 +40,7 @@
 	plusOneOld(2);
 ```
 
-### Higher Order Functions
+## Higher Order Functions
 
 
 ### Array Operations
@@ -69,6 +70,22 @@ console.log('reduce', arr4);
 ### Promises
 
 ## Reactive Programming
+
+### Obserables
+```js
+const source = Rx.Observable.create(observer => {
+	observer.onNext(42);
+	observer.onCompleted();
+
+	return () => console.log('disposed');
+});
+
+const subscription = source.subscribe(
+	x => console.log('Next: ' + x),
+	err => console.log('Error: ' + err),
+	() => console.log('Completed')
+);
+```
 
 ## References
 [Simon Peyton Jones - Haskell is useless](https://www.youtube.com/watch?v=iSmkqocn0oQ)

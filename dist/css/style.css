@@ -2792,7 +2792,7 @@ h1, h2, h3, h4, h5 {
         max-width: 100%; }
       .slides section > span .codebin {
         margin: 10px 0px;
-        min-width: 800px;
+        min-width: 780px;
         display: inline-block; }
         .slides section > span .codebin code {
           font-family: monospace;
@@ -2805,7 +2805,7 @@ h1, h2, h3, h4, h5 {
           tab-size: 2;
           transition: box-shadow .3s; }
           .slides section > span .codebin code.example {
-            min-width: 500px;
+            min-width: 400px;
             border: 1px solid #969dab;
             box-shadow: inset 0px 0px 0px #949fa9, 2px 2px 3px transparent; }
             .slides section > span .codebin code.example:focus {
@@ -2814,7 +2814,8 @@ h1, h2, h3, h4, h5 {
           .slides section > span .codebin code.console {
             width: 280px; }
             .slides section > span .codebin code.console .err {
-              color: #800; }
+              color: #800;
+              font-size: inherit; }
 
 .controls {
   display: block;
